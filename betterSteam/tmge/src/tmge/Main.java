@@ -5,5 +5,6 @@ public class Main {
         // create pull req
         //Game test = new Game();
         //.out.println(test.getGrid().printGrid());
+        System.out.println("Hi");
     }
 }
