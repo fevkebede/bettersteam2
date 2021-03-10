@@ -1,2 +1,3 @@
 module tetris {
+    requires tmge;
 }
