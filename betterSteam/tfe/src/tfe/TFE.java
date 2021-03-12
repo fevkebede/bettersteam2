@@ -1,153 +1,128 @@
 package tfe;
 
 import tmge.Cell;
-import tmge.Grid;
+import tmge.SquareTile;
 import tmge.TileFactory;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Scanner;
 
-public class tfe extends tmge.Game{
-    ArrayList<Cell> toDelete;
-    private Grid grid;
-    private TileFactory tileFactory;
-    private int score;
-    private boolean boardFilled;
+import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+
+public class TFE extends Application {
+	
+//	TODO use grid 
+	private SquareTile[][] tileGrid = new SquareTile[MAX_ROWS][MAX_COLS];;
+	
+    ArrayList<Cell> toDelete = new ArrayList<Cell>();
+    private TileFactory tileFactory = new TileFactory();
+    private IntegerProperty score = new SimpleIntegerProperty(2);
+    private boolean boardFilled = false;
+    
     public static int MAX_ROWS = 4;
     public static int MAX_COLS = 4;
+    public static int TILE_SIZE = 100; //pixel diameter of tile
+    
+    private static final int UP = 1;
+    private static final int DOWN = 2;
+    private static final int LEFT = 3;
+    private static final int RIGHT = 4;
 
     private int goal = 2048;
     private boolean GAME_ACTIVE = true;
 
-    public tfe() {
-        boardFilled = false;
-        score = 2;
-        this.tileFactory = new TileFactory();
-        this.initGrid();
-        this.toDelete = new ArrayList<Cell>();
-    }
-
     @Override
-    public void startGame() {
-        do{
-            displayGrid();
-            handleInput();
-            if(GAME_ACTIVE){
-                fillTwo();
-                checkGameover();
+    public void start(Stage primaryStage) throws Exception {
+    	Scene scene = new Scene(createContent(), MAX_ROWS * TILE_SIZE + 200, MAX_COLS * TILE_SIZE + 200);
+        
+		scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.LEFT) {
+            	System.out.println("LEFT");
+            	handleMove(LEFT);
+            } else if (e.getCode() == KeyCode.RIGHT) {
+            	System.out.println("RIGHT");
+            	handleMove(RIGHT);
+            } else if (e.getCode() == KeyCode.UP) {
+            	System.out.println("UP");
+            	handleMove(UP);
+            } else if (e.getCode() == KeyCode.DOWN) {
+            	System.out.println("DOWN");
+            	handleMove(DOWN);
             }
-        } while(GAME_ACTIVE);
-        quit();
+        });
+        
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Bejeweled");
+        primaryStage.show();
     }
+    
+    private Parent createContent() {
+    	GridPane root = new GridPane();
+    	root.setPadding(new Insets(20, 20, 20, 20));
 
-    @Override
-    public void initGrid() {
-
-        this.grid = new Grid(MAX_ROWS, MAX_COLS);
+    	GridPane board = new GridPane();
+        board.setPrefSize(MAX_ROWS * TILE_SIZE, MAX_COLS * TILE_SIZE);
+        
+        System.out.println("creating scene ");
+        
         for (int i = 0; i < MAX_ROWS; i++) {
             for (int j = 0; j < MAX_COLS; j++) {
-                grid.setCell(i, j, 0);
+            
+            	Text text = new Text();
+            	text.setFont(Font.font(40));
+            	
+            	SquareTile new_tile = tileFactory.createSquareTile(j, i, TILE_SIZE, text);
+            	
+//            	StackPane layers text over tile
+            	board.add(new StackPane(new_tile, text), j, i);
+            	
+                setInitialCell(i, j, new_tile);
             }
         }
+        
         fillTwo();
         fillTwo();
-    }
 
-    @Override
-    public void handleInput() {
-        int dirNumber;
-        do {
-            System.out.println("Select direction of to move blocks");
-            System.out.println("1) Up\n2) Down\n3) Left\n4) Right\n5) Quit");
-            dirNumber = getIntInput("Enter direction: ", 1, 5);
-        } while (!validMove(dirNumber));
-        if(GAME_ACTIVE){
-            // DO THE SWIPE
-            moveBlocks(dirNumber);
+        Text title = new Text("2048");
+        Text textScore = new Text();
+        
+        title.setFont(Font.font(64));
+        textScore.setFont(Font.font(44));
+        textScore.textProperty().bind(score.asString("Score: %d"));
+
+//        add(item_to_add, colInd, rowInd)
+        root.add(title, 0, 0);
+        root.add(board, 0, 1);
+        root.add(textScore, 0, 2);
+        return root;
+    }
+    
+    
+    private void handleMove(int dir) {
+    	
+        if (GAME_ACTIVE) {
+        	moveBlocks(dir);
+            fillTwo();
+            checkGameover();
+        } else {
+        	System.out.println("Game over");
         }
     }
 
-    private boolean validMove(int dir) {
+    public void moveBlocks(int dir) {
         switch(dir){
-            case 1: { // UP
-                for(int i = 1; i < MAX_ROWS; i++){
-                    for(int j = 0; j < MAX_COLS; j++){
-//                        int currCell = grid.getCell(i, j);
-//                        if(grid.getCell(i - 1, j) == 0 && currCell != 0){
-//                            if(grid.getCell(i - 1, j) == currCell){
-//                                return true;
-//                            }
-//                        }
-                        if(grid.getCell(i - 1, j) == 0){
-                            return true;
-                        }
-                    }
-                }
-                break;
-            }
-            case 2: { // DOWN
-                for(int i = 0; i < MAX_ROWS - 1; i++){
-                    for(int j = 0; j < MAX_COLS; j++){
-//                        int currCell = grid.getCell(i, j);
-//                        if(grid.getCell(i + 1, j) == 0 && currCell != 0){
-//                            if(grid.getCell(i + 1, j) == currCell){
-//                                return true;
-//                            }
-//                        }
-                        if(grid.getCell(i + 1, j) == 0){
-                            return true;
-                        }
-                    }
-                }
-                break;
-            }
-            case 3: { // LEFT
-                for(int i = 0; i < MAX_ROWS; i++){
-                    for(int j = 1; j < MAX_COLS; j++){
-//                        int currCell = grid.getCell(i, j);
-//                        if(grid.getCell(i, j -1) == 0 && currCell != 0){
-//                            if(grid.getCell(j - 1, j) == currCell){
-//                                return true;
-//                            }
-//                        }
-                        if(grid.getCell(i, j -1) == 0){
-                            return true;
-                        }
-                    }
-                }
-                break;
-            }
-            case 4: { // RIGHT
-                for(int i = 0; i < MAX_ROWS; i++){
-                    for(int j = 0; j < MAX_COLS - 1; j++){
-//                        int currCell = grid.getCell(i, j);
-//                        if(grid.getCell(i, j + 1) == 0 && currCell != 0){
-//                            if(grid.getCell(j + 1, j) == currCell){
-//                                return true;
-//                            }
-//                        }
-                        if(grid.getCell(i, j + 1) == 0){
-                            return true;
-                        }
-                    }
-                }
-                break;
-            }
-            case 5: {
-                GAME_ACTIVE = false;
-                return true;
-            }
-        }
-        System.out.print("Invalid direction!\nRe-");
-        return false;
-    }
-
-    public void moveBlocks(int dir){
-        switch(dir){
-            case 1: { // UP
+            case UP: { // UP
                 for(int j = 0; j < MAX_COLS; j++){
                     for(int i = 1; i < MAX_ROWS; i++){
                         int k = 0;
@@ -155,7 +130,7 @@ public class tfe extends tmge.Game{
                         while(k < i){
                             Cell A = new Cell(i, j);
                             Cell B = new Cell(k, j);
-                            if(grid.getCell(k, j) == 0){
+                            if(getTileValue(k, j) == 0){
                                 moveBlock(A, B);
                             }
                             else{
@@ -170,7 +145,7 @@ public class tfe extends tmge.Game{
                 }
                 break;
             }
-            case 2: { // DOWN
+            case DOWN: { // DOWN
                 for(int j = 0; j < MAX_COLS; j++){
                     for(int i = MAX_ROWS - 2; i >= 0; i--){
                         int k = MAX_ROWS - 1;
@@ -178,7 +153,7 @@ public class tfe extends tmge.Game{
                         while(k > i){
                             Cell A = new Cell(i, j);
                             Cell B = new Cell(k, j);
-                            if(grid.getCell(k, j) == 0){
+                            if(getTileValue(k, j) == 0){
                                 moveBlock(A, B);
                             }
                             else{
@@ -193,7 +168,7 @@ public class tfe extends tmge.Game{
                 }
                 break;
             }
-            case 3: { // LEFT
+            case LEFT: { // LEFT
                 for(int i = 0; i < MAX_ROWS; i++){
                     int[] tempArr = {0, 0 ,0, 0};
                     for(int j = 1; j < MAX_COLS; j++){
@@ -201,7 +176,7 @@ public class tfe extends tmge.Game{
                         while(k < j){
                             Cell A = new Cell(i, j);
                             Cell B = new Cell(i, k);
-                            if(grid.getCell(i, k) == 0){
+                            if(getTileValue(i, k) == 0){
                                 moveBlock(A, B);
                             }
                             else{
@@ -216,7 +191,7 @@ public class tfe extends tmge.Game{
                 }
                 break;
             }
-            case 4: { // RIGHT
+            case RIGHT: { // RIGHT
                 for(int i = 0; i < MAX_ROWS; i++){
                     int[] tempArr = {0, 0 ,0, 0};
                     for(int j = MAX_COLS - 2; j >= 0; j--){
@@ -224,7 +199,7 @@ public class tfe extends tmge.Game{
                         while(k > j){
                             Cell A = new Cell(i, j);
                             Cell B = new Cell(i, k);
-                            if(grid.getCell(i, k) == 0){
+                            if(getTileValue(i, k) == 0){
                                 moveBlock(A, B);
                             }
                             else{
@@ -242,10 +217,10 @@ public class tfe extends tmge.Game{
         }
     }
 
-    public boolean canCombine(Cell A, Cell B){
+    private boolean canCombine(Cell A, Cell B) {
         // Checking if values in both cells are the same
-        int valueA = grid.getCell(A.getRow(), A.getCol());
-        int valueB = grid.getCell(B.getRow(), B.getCol());
+        int valueA = getTileValue(A.getRow(), A.getCol());
+        int valueB = getTileValue(B.getRow(), B.getCol());
         if(valueA == valueB){
             return true;
         }
@@ -253,78 +228,82 @@ public class tfe extends tmge.Game{
     }
 
     // A to B
-    public void combine(Cell A, Cell B){
-        int doubleValue = grid.getCell(B.getRow(), B.getCol()) * 2;
-        grid.setCell(B.getRow(), B.getCol(), doubleValue);
-        grid.setCell(A.getRow(), A.getCol(), 0);
+    private void combine(Cell A, Cell B) {
+        int doubleValue = getTileValue(B.getRow(), B.getCol()) * 2;
+        setTileValue(B.getRow(), B.getCol(), doubleValue);
+        setTileValue(A.getRow(), A.getCol(), 0);
 
-        if(doubleValue > score){ score = doubleValue; }
+        System.out.println("double " + doubleValue + " score " + score.getValue());
+        if (doubleValue > score.getValue()){ score.setValue(doubleValue); }
     }
 
-    public void moveBlock(Cell A, Cell B){
-        int tempVal = grid.getCell(A.getRow(), A.getCol());
-        grid.setCell(B.getRow(), B.getCol(), tempVal);
-        grid.setCell(A.getRow(), A.getCol(), 0);
+    private void moveBlock(Cell A, Cell B){
+        int tempVal = getTileValue(A.getRow(), A.getCol());
+        setTileValue(B.getRow(), B.getCol(), tempVal);
+        setTileValue(A.getRow(), A.getCol(), 0);
     }
 
-    private int getIntInput(String prompt, int lowerBound, int higherBound) {
-        Scanner in = new Scanner(System.in);
-        int getInput = -1;
-        do {
-            System.out.println(prompt);
-            try {
-                getInput = in.nextInt();
-            } catch(InputMismatchException e) {
-                getInput = -1;
-            }
-        } while (getInput > higherBound || getInput < lowerBound);
-
-        System.out.println();
-        return getInput;
-    }
-
-    @Override
+//    @Override
     public void checkGameover() {
-        GAME_ACTIVE = !boardFilled && score < goal;
+        GAME_ACTIVE = !boardFilled && score.getValue() < goal;
     }
-
-    @Override
-    public void displayGrid() {
-        System.out.print(grid);
-        System.out.println(String.format("Current Highest Block: %d",score));
-        System.out.println(String.format("Goal: %d", goal));
+    
+    int getTileValue(int row, int col) { return tileGrid[row][col].getValue(); }
+    
+    public void setTileValue(int row, int col, int value) {
+        updateTileValue(tileGrid[row][col], value);
     }
-
-    @Override
-    public void matchCheck() {
-
+    
+    private void updateTileValue(SquareTile tile, int value) {
+   	 tile.setValue(value);
+   	 String label = tile.getValue() == 0 ? "" : String.valueOf(tile.getValue());
+   	 tile.getLabel().setText(label);
+   }
+    
+    private void setInitialCell(int row, int col, SquareTile tile) {
+        tileGrid[row][col] = tile;
     }
+    
+//    @Override
+//    public void matchCheck() {
+//
+//    }
+//
+//    @Override
+//    public void save() {
+//
+//    }
+//
+//    @Override
+//    public int quit() { return score; }
 
-    @Override
-    public void save() {
-
-    }
-
-    @Override
-    public int quit() { return score; }
-
-    public void fillTwo(){
+//    TODO fill either 2 or 4
+    public void fillTwo() {
         // Set two cells to value 2 to get beginning board
         // 90% fill 2, 10% fill 4
-        ArrayList<Cell> emptyCells = new ArrayList<Cell>();
-        for(int i = 0; i < MAX_ROWS; i++){
+        
+    	ArrayList<Cell> emptyCells = new ArrayList<Cell>();
+        for (int i = 0; i < MAX_ROWS; i++){
             for(int j = 0; j < MAX_COLS; j++){
-                if(grid.getCell(i, j) == 0){
+                if (getTileValue(i, j) == 0){
                     emptyCells.add(new Cell(i, j));
                 }
             }
         }
-        if(emptyCells.size() == 0){
+        
+        if (emptyCells.size() == 0) {
             boardFilled = true;
         }
 
-        int index = tileFactory.getNewTile(0, emptyCells.size()- 1);
+        int index = tileFactory.getRandom(0, emptyCells.size() - 1);
         Cell tempCell = emptyCells.get(index);
-        grid.setCell(tempCell.getRow(), tempCell.getCol(), 2);
+        
+        setTileValue(tempCell.getRow(), tempCell.getCol(), 2);
     }
+    
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
+    
 }

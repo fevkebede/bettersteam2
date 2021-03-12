@@ -4,24 +4,30 @@ import java.util.Random;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 public class TileFactory {
+	Random rand = new Random();
+//	boolean tfe;
+	
 	Color[] colors = new Color[] {
             Color.RED, Color.ORANGE, Color.YELLOW, Color.BLUE, Color.GREEN, Color.PURPLE, Color.SILVER, Color.CORAL 
     };
 	
-    Random rand;
 
-//    constructor can take in tile types for diff games?
-    public TileFactory () {
-        this.rand = new Random();
-    }
-
-    public int getNewTile(int low, int high) {
+//	TFE
+    public int getRandom(int low, int high) {
         return rand.nextInt(high-low) + low;
     }
     
-    public Tile createTile(Point2D point, int size) {
+    public SquareTile createSquareTile(int row, int col, int size, Text label) {
+    	return new SquareTile(row, col, size, label);
+    }
+    
+    
+//    Bejeweled 
+    public Tile createCircleTile(Point2D point, int size) {
     	int colorId = getRandomInt();
     	return new Tile(point, getRandomColor(colorId), colorId, size);
     }

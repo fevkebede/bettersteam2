@@ -55,7 +55,7 @@ public class Bejeweled extends Application {
         
         for (int i = 0; i < MAX_ROWS; i++) {
             for (int j = 0; j < MAX_COLS; j++) {
-            	Tile new_tile = tileFactory.createTile(new Point2D(j, i), TILE_SIZE);
+            	Tile new_tile = tileFactory.createCircleTile(new Point2D(j, i), TILE_SIZE);
             	new_tile.setOnMouseClicked(event -> {
             		System.out.println("clicked tile " + new_tile);
                     if (selected == null) {
