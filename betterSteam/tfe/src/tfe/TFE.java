@@ -1,7 +1,8 @@
 package tfe;
 
 import tmge.Cell;
-import tmge.SquareTile;
+import tmge.Tile;
+import tmge.TFETile;
 import tmge.TileFactory;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import javafx.stage.Stage;
 public class TFE extends Application {
 	
 //	TODO use grid 
-	private SquareTile[][] tileGrid = new SquareTile[MAX_ROWS][MAX_COLS];;
+	private TFETile[][] tileGrid = new TFETile[MAX_ROWS][MAX_COLS];;
 	
     ArrayList<Cell> toDelete = new ArrayList<Cell>();
     private TileFactory tileFactory = new TileFactory();
@@ -82,7 +83,7 @@ public class TFE extends Application {
             	Text text = new Text();
             	text.setFont(Font.font(40));
             	
-            	SquareTile new_tile = tileFactory.createSquareTile(j, i, TILE_SIZE, text);
+            	TFETile new_tile = tileFactory.createSquareTile(j, i, TILE_SIZE, text);
             	
 //            	StackPane layers text over tile
             	board.add(new StackPane(new_tile, text), j, i);
@@ -254,13 +255,13 @@ public class TFE extends Application {
         updateTileValue(tileGrid[row][col], value);
     }
     
-    private void updateTileValue(SquareTile tile, int value) {
+    private void updateTileValue(TFETile tile, int value) {
    	 tile.setValue(value);
    	 String label = tile.getValue() == 0 ? "" : String.valueOf(tile.getValue());
    	 tile.getLabel().setText(label);
    }
     
-    private void setInitialCell(int row, int col, SquareTile tile) {
+    private void setInitialCell(int row, int col, TFETile tile) {
         tileGrid[row][col] = tile;
     }
     

@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
+
 public class TileFactory {
 	Random rand = new Random();
 //	boolean tfe;
@@ -21,18 +22,18 @@ public class TileFactory {
         return rand.nextInt(high-low) + low;
     }
     
-    public SquareTile createSquareTile(int row, int col, int size, Text label) {
-    	return new SquareTile(row, col, size, label);
+    public TFETile createSquareTile(int row, int col, int size, Text label) {
+    	return new TFETile(row, col, size, label);
     }
     
     
 //    Bejeweled 
-    public Tile createCircleTile(Point2D point, int size) {
+    public BejeweledTile createCircleTile(Point2D point, int size) {
     	int colorId = getRandomInt();
-    	return new Tile(point, getRandomColor(colorId), colorId, size);
+    	return new BejeweledTile(point, getRandomColor(colorId), colorId, size);
     }
 
-    public void setRandomColor(Tile tile) {
+    public void setRandomColor(BejeweledTile tile) {
     	int colorId = getRandomInt();
     	tile.setColor(getRandomColor(colorId), colorId);
     }

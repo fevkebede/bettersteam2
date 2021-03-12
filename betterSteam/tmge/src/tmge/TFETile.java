@@ -1,7 +1,5 @@
 package tmge;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -10,16 +8,13 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 
-public class SquareTile extends Rectangle {
+public class TFETile extends Tile {
 //    private int size;
 	private IntegerProperty value = new SimpleIntegerProperty();
 	private Text label;
-    private int row;
-    private int col;
-//    private boolean flagged = false;
 
-    public SquareTile(int row, int col, int size, Text label) {
-    	super(size, size);
+    public TFETile(int row, int col, int size, Text label) {
+    	super(size);
     	this.row = row;
     	this.col = col;
     	this.label = label;
@@ -27,15 +22,6 @@ public class SquareTile extends Rectangle {
     	setFill(Color.GREY);
     	setStroke(Color.BLACK);
 
-    }
-
-    public int getColumn() {
-//    	inherited from Parent, gets x position
-        return col;
-    }
-
-    public int getRow() {
-        return row;
     }
     
     public IntegerProperty getValueProperty() {

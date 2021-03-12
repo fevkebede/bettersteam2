@@ -1,13 +1,13 @@
 package tmge;
 
 public class Grid {
-    private Tile[][] grid;
+    private BejeweledTile[][] grid;
 
     public Grid(int rows, int cols) {
-        grid = new Tile[rows][cols];
+        grid = new BejeweledTile[rows][cols];
     }
 
-    public void updateCell(int row, int col, Tile val) {
+    public void updateCell(int row, int col, BejeweledTile val) {
         grid[row][col] = val;
     }
     
@@ -35,15 +35,15 @@ public class Grid {
         return result;
     }
 
-    public Tile[][] getGrid() {
+    public BejeweledTile[][] getGrid() {
         return grid;
     }
     
-    public void setGrid(Tile[][] grid) {
+    public void setGrid(BejeweledTile[][] grid) {
         this.grid = grid;
     }
     
-    public void setCell(int row, int col, Tile tile) {
+    public void setCell(int row, int col, BejeweledTile tile) {
         grid[row][col] = tile;
     }
     
