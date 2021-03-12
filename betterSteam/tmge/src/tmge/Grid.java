@@ -1,16 +1,16 @@
 package tmge;
 
 public class Grid {
-    private int[][] grid;
+    private Tile[][] grid;
 
     public Grid(int rows, int cols) {
-        grid = new int[rows][cols];
+        grid = new Tile[rows][cols];
     }
 
-    public void updateCell(int row, int col, int val) {
+    public void updateCell(int row, int col, Tile val) {
         grid[row][col] = val;
     }
-
+    
     @Override
     public String toString() {
         // TODO Auto-generated method stub
@@ -35,13 +35,16 @@ public class Grid {
         return result;
     }
 
-    public int[][] getGrid() {
+    public Tile[][] getGrid() {
         return grid;
     }
-    public void setGrid(int[][] grid) {
+    
+    public void setGrid(Tile[][] grid) {
         this.grid = grid;
     }
-    public void setCell(int row, int col, int val) {
-        grid[row][col] = val;
+    
+    public void setCell(int row, int col, Tile tile) {
+        grid[row][col] = tile;
     }
+    
 }
