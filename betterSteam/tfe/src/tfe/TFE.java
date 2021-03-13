@@ -9,12 +9,9 @@ import tmge.PlayerData;
 
 import java.util.ArrayList;
 
-//import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
-//import javafx.scene.Parent;
-//import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -37,7 +34,6 @@ public class TFE {
     
     public static int MAX_ROWS = 4;
     public static int MAX_COLS = 4;
-    public static int TILE_SIZE = 100; //pixel diameter of tile
     
     private static final int UP = 1;
     private static final int DOWN = 2;
@@ -80,7 +76,7 @@ public class TFE {
     public GridPane createGame() {
     	
     	GridPane root = new GridPane();
-    	root.setPadding(new Insets(20, 20, 20, 20));
+//    	root.setPadding(new Insets(20, 20, 20, 20));
 
     	GridPane board = new GridPane();
 //        board.setPrefSize(MAX_ROWS * TILE_SIZE, MAX_COLS * TILE_SIZE);
@@ -93,7 +89,7 @@ public class TFE {
             	Text text = new Text();
             	text.setFont(Font.font(40));
             	
-            	TFETile new_tile = tileFactory.createSquareTile(j, i, TILE_SIZE, text);
+            	TFETile new_tile = tileFactory.createTFETile(j, i, text);
             	
 //            	StackPane layers text over tile
             	board.add(new StackPane(new_tile, text), j, i);
@@ -102,7 +98,7 @@ public class TFE {
             }
         }
         
-//        addKeyPressListeners(board);
+        addKeyPressListeners(board);
         
         fillTwo();
         fillTwo();
@@ -127,6 +123,8 @@ public class TFE {
     
     
     public void addKeyPressListeners(GridPane board) {
+    	System.out.println("addKeyPressListeners");
+    	
 		board.setOnKeyPressed(e -> {
 			System.out.println("Handle key press");
             if (e.getCode() == KeyCode.LEFT && validMove(LEFT)) {
@@ -407,7 +405,7 @@ public class TFE {
             boardFilled = true;
         }
 
-        int index = tileFactory.getRandom(0, emptyCells.size() - 1);
+        int index = tileFactory.getRandomValue(0, emptyCells.size() - 1);
         Cell tempCell = emptyCells.get(index);
         
         setTileValue(tempCell.getRow(), tempCell.getCol(), 2);

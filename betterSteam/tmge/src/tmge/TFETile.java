@@ -33,14 +33,9 @@ public class TFETile extends Tile {
     }
 
     public void setValue(int val) {
-//    	if (val == 0) val = null;
     	this.value.setValue(val);
     }
 
-//    public void setFlag(boolean flag) {
-//    	flagged = flag;
-//    }
-    
     public Text getLabel() {
     	return label;
     }

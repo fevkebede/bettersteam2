@@ -1,57 +1,57 @@
 package tmge;
 
-import javafx.geometry.Point2D;
-import javafx.scene.Parent;
+//import javafx.geometry.Point2D;
+//import javafx.scene.Parent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
+//import javafx.scene.paint.Paint;
+import javafx.scene.shape.StrokeType;
 
 
-// TODO update to extend from rectangle and add circle inside 
-public class BejeweledTile extends Parent {
-    private Circle circle;
-    private int size;
+public class BejeweledTile extends Tile {
+//    private Circle circle;
+//    private int size;
     private int colorId; // used for comparisons since Color is an object
     private boolean flagged = false;
 
-    public BejeweledTile(Point2D point, Color color, int colorId, int size) {
-    	circle = new Circle(size / 2);
-        circle.setCenterX(size / 2);
-        circle.setCenterY(size / 2);
-        circle.setFill(color);
-
-
-//        setPosition((int)point.getX(), (int)point.getY());
-        setTranslateX(point.getX() * size);
-        setTranslateY(point.getY() * size);
-        getChildren().add(circle);
-        
-        this.size = size;
-        this.colorId = colorId;
+    public BejeweledTile(int row, int col, Color color, int colorId, int size) {
+    	super(size);
+    	
+    	this.row = row;
+    	this.col = col;
+    	this.colorId = colorId;
+    	
+//    	this.size = size;
+    	
+    	setArcWidth(50);
+    	setArcHeight(50);
+    	
+    	setFill(color);
 
     }
 
-    public int getColumn() {
-//    	inherited from Parent, gets x position
-        return (int)getTranslateX() / size;
-    }
 
-    public int getRow() {
-        return (int)getTranslateY() / size;
-    }
-
-    public void setColor(Paint color, int colorId) {
-        circle.setFill(color);
-        this.colorId = colorId;
-    }
-
-    public Paint getColor() {
-        return circle.getFill();
-    }
-    
-    public int getColorId() {
+    public int getValue() {
     	return colorId;
     }
+
+    public void setValue(int newColor) {
+//    	if (val == 0) val = null;
+    	this.colorId = newColor;
+    	setFill(TileFactory.colors[newColor]);
+    }
+    
+    public void setSeleted() {
+    	System.out.println("setSelected " + this);
+    	setStroke(Color.BLACK);
+    	setStrokeWidth(5);
+    	setStrokeType(StrokeType.INSIDE);
+    	System.out.println("setSelected done");
+    }
+    
+    public void removeSelected() {
+    	setStroke(null);
+    }
+    
     
     public void setFlag(boolean flag) {
     	flagged = flag;
@@ -59,11 +59,6 @@ public class BejeweledTile extends Parent {
     
     public boolean getFlag() {
     	return flagged;
-    }
-    
-    public void updateColor(int newColorID) {
-    	this.colorId = newColorID;
-    	circle.setFill(TileFactory.colors[newColorID]);
     }
 
     @Override

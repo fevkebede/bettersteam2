@@ -11,11 +11,7 @@ import java.util.ArrayList;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -25,9 +21,8 @@ public class Bejeweled {
 	private PlayerData player;
 
     ArrayList<Cell> toDelete = new ArrayList<Cell>(); // List of locations to delete
-    public static int MAX_ROWS = 7;//7;
-    public static int MAX_COLS = 7;//7;
-    public static int TILE_SIZE = 50; //pixel diameter of tile
+    public static int MAX_ROWS = 7;
+    public static int MAX_COLS = 7;
     
     private Grid grid = new Grid(MAX_ROWS, MAX_COLS);
     private TileFactory tileFactory = new TileFactory();
@@ -48,31 +43,39 @@ public class Bejeweled {
     
     public GridPane createGame() {
     	GridPane root = new GridPane();
-    	root.setPadding(new Insets(20, 20, 20, 20));
+//    	root.setPadding(new Insets(20, 20, 20, 20));
 
-        Pane board = new Pane();
-        board.setPrefSize(MAX_ROWS * TILE_SIZE, MAX_COLS * TILE_SIZE);
+    	GridPane board = new GridPane();
         
         for (int i = 0; i < MAX_ROWS; i++) {
             for (int j = 0; j < MAX_COLS; j++) {
-            	BejeweledTile new_tile = tileFactory.createCircleTile(new Point2D(j, i), TILE_SIZE);
+            	BejeweledTile new_tile = tileFactory.createBejeweledTile(j, i);
             	new_tile.setOnMouseClicked(event -> {
+            		
+//            		System.out.println("\ntile clicked " + new_tile);
                     if (selected == null) {
                         selected = new_tile;
-//                        TODO add a border to highlight the selected tile
+                        selected.setSeleted();
+                        
                     }
                     else {
-                    	
+
                         swap(new_tile, selected);
+                        
+                        selected.removeSelected();
                         selected = null;
                     }
                     removeAllMatches(true);
                 });
             	
                 grid.setCell(i, j, new_tile);
-                board.getChildren().add(new_tile);
+                board.add(new_tile, j, i);
             }
         }
+        
+//        spacing between grid row/col
+        board.setHgap(5);
+        board.setVgap(5);
         
         removeAllMatches(false);
 
@@ -107,7 +110,8 @@ public class Bejeweled {
     }
     
     private void swap(BejeweledTile a, BejeweledTile b) {
-//    	System.out.println("\n\nSWAP" +  a + " -> " + b);
+//    	System.out.println("SWAP" +  a + " -> " + b);
+    	
         swapColors(a,b);
         matchCheck(a,b);
     }
@@ -115,10 +119,16 @@ public class Bejeweled {
     private void swapColors(BejeweledTile a, BejeweledTile b) {
     	if (validMove(a,b)) {
     		movesLeft.setValue(movesLeft.getValue()-1);
-    		Paint a_color = a.getColor();
-            int a_colorId = a.getColorId();
-            a.setColor(b.getColor(), b.getColorId());
-            b.setColor(a_color, a_colorId);
+    		
+    		int val = a.getValue();
+    		a.setValue(b.getValue());
+    		b.setValue(val);
+    		
+//    		Paint a_color = a.getColor();
+//            int a_colorId = a.getColorId();
+//            
+//            a.setColor(b.getColor(), b.getColorId());
+//            b.setColor(a_color, a_colorId);
     	} 
     }
 
@@ -155,13 +165,13 @@ public class Bejeweled {
         int current = -1;
 
         for (int i = 0; i < grid.getGrid()[row].length; i++) {
-            if (grid.getGrid()[row][i].getColorId() != current) {
+            if (grid.getGrid()[row][i].getValue() != current) {
                 if (tempToDelete.size() >= 3) {
                     toDelete.addAll(tempToDelete);
                 }
                 tempToDelete.clear();
                 tempToDelete.add(new Cell(row, i));
-                current = grid.getGrid()[row][i].getColorId();
+                current = grid.getGrid()[row][i].getValue();
 
             } else {
                 tempToDelete.add(new Cell(row, i));
@@ -177,14 +187,14 @@ public class Bejeweled {
         int current = -1;
 
         for (int i = 0; i < grid.getGrid().length; i++) {
-            if (grid.getGrid()[i][col].getColorId() != current) {
+            if (grid.getGrid()[i][col].getValue() != current) {
                 if (tempToDelete.size() >= 3) {
                     toDelete.addAll(tempToDelete);
                 }
                 tempToDelete.clear();
                 tempToDelete.add(new Cell(i, col));
 
-                current = grid.getGrid()[i][col].getColorId();
+                current = grid.getGrid()[i][col].getValue();
 
             } else {
                 tempToDelete.add(new Cell(i, col));
@@ -242,21 +252,20 @@ public class Bejeweled {
         
         for (int i = 0; i < grid.getGrid().length; i++) {
             if (grid.getGrid()[i][col].getFlag() == false ) {
-                tempColumn.add(grid.getGrid()[i][col].getColorId());
+                tempColumn.add(grid.getGrid()[i][col].getValue());
             } else {
             	grid.getGrid()[i][col].setFlag(false);
             }
         }      
 
         while (tempColumn.size() < MAX_COLS)  {
-            tempColumn.add(0, tileFactory.getRandomInt());
+            tempColumn.add(0, tileFactory.getRandomColorId());
         }
 
         for (int i = 0; i < grid.getGrid().length; i++) {
-            grid.getGrid()[i][col].updateColor(tempColumn.get(i));
+            grid.getGrid()[i][col].setValue(tempColumn.get(i));
         }
     }
-    	
     
     private void printTiles() {
         System.out.println("\nTiles");
@@ -273,7 +282,7 @@ public class Bejeweled {
         System.out.println("\nBOARD");
         for (int i = 0; i < grid.getGrid().length; i++) {
             for (int j = 0; j < grid.getGrid()[i].length; j++) {
-            	System.out.print(" " + grid.getGrid()[i][j].getColorId() + " | ");
+            	System.out.print(" " + grid.getGrid()[i][j].getValue() + " | ");
             }
             System.out.println();
         }

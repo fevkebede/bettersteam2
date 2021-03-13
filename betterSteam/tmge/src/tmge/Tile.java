@@ -21,3 +21,25 @@ public abstract class Tile extends Rectangle {
 	public abstract String toString();
 	
 }
+
+//new_tile.setSeleted();
+//delayedSwap(new_tile, selected);
+
+//private void delayedSwap(BejeweledTile a, BejeweledTile b) {
+//	System.out.println("\nstart delay");
+//  
+//	PauseTransition pause = new PauseTransition(Duration.millis(3000));
+//	
+//	pause.setOnFinished(event -> {
+//		System.out.println("PAUSE end");
+//		swap(a,b);
+//		
+//		a.removeSelected();
+//      selected.removeSelected();
+//      selected = null;
+//	});
+//	
+//	pause.play();
+//	
+//	System.out.println("end delay");
+//}
