@@ -28,7 +28,8 @@ public class TFE extends Application {
 	
     ArrayList<Cell> toDelete = new ArrayList<Cell>();
     private TileFactory tileFactory = new TileFactory();
-    private IntegerProperty score = new SimpleIntegerProperty(2);
+    private IntegerProperty highestScore = new SimpleIntegerProperty(2);
+    private IntegerProperty score = new SimpleIntegerProperty(0);
     private boolean boardFilled = false;
     
     public static int MAX_ROWS = 4;
@@ -48,16 +49,16 @@ public class TFE extends Application {
     	Scene scene = new Scene(createContent(), MAX_ROWS * TILE_SIZE + 200, MAX_COLS * TILE_SIZE + 200);
         
 		scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.LEFT) {
+            if (e.getCode() == KeyCode.LEFT && validMove(LEFT)) {
             	System.out.println("LEFT");
             	handleMove(LEFT);
-            } else if (e.getCode() == KeyCode.RIGHT) {
+            } else if (e.getCode() == KeyCode.RIGHT && validMove(RIGHT)) {
             	System.out.println("RIGHT");
             	handleMove(RIGHT);
-            } else if (e.getCode() == KeyCode.UP) {
+            } else if (e.getCode() == KeyCode.UP && validMove(UP)) {
             	System.out.println("UP");
             	handleMove(UP);
-            } else if (e.getCode() == KeyCode.DOWN) {
+            } else if (e.getCode() == KeyCode.DOWN && validMove(DOWN)) {
             	System.out.println("DOWN");
             	handleMove(DOWN);
             }
@@ -96,16 +97,20 @@ public class TFE extends Application {
         fillTwo();
 
         Text title = new Text("2048");
-        Text textScore = new Text();
+        Text highestBrick = new Text();
+        Text playerScore = new Text();
         
         title.setFont(Font.font(64));
-        textScore.setFont(Font.font(44));
-        textScore.textProperty().bind(score.asString("Score: %d"));
+        highestBrick.setFont(Font.font(44));
+        highestBrick.textProperty().bind(highestScore.asString("Highest Brick: %d"));
+        playerScore.setFont(Font.font(44));
+        playerScore.textProperty().bind(score.asString("Score: %d"));
 
 //        add(item_to_add, colInd, rowInd)
         root.add(title, 0, 0);
         root.add(board, 0, 1);
-        root.add(textScore, 0, 2);
+        root.add(highestBrick, 0, 2);
+        root.add(playerScore, 0, 3);
         return root;
     }
     
@@ -120,7 +125,77 @@ public class TFE extends Application {
         	System.out.println("Game over");
         }
     }
-
+    private boolean validMove(int dir) {
+        switch(dir){
+            case UP: { // UP
+                for(int i = 1; i < MAX_ROWS; i++){
+                    for(int j = 0; j < MAX_COLS; j++){
+                        int currCell = getTileValue(i, j);
+                        if((getTileValue(i - 1, j) == 0 && currCell != 0) ||
+                        		(getTileValue(i - 1, j) == currCell)){
+                        	return true;
+                        }
+//                        if(getTileValue(i - 1, j) == 0){
+//                            return true;
+//                        }
+                    }
+                }
+                break;
+            }
+            case DOWN: { // DOWN
+                for(int i = 0; i < MAX_ROWS - 1; i++){
+                    for(int j = 0; j < MAX_COLS; j++){
+                        int currCell = getTileValue(i, j);
+                        if((getTileValue(i + 1, j) == 0 && currCell != 0) || 
+                        		(getTileValue(i + 1, j) == currCell)){
+                        	return true;
+                        }
+//                        if(getTileValue(i + 1, j) == 0){
+//                            return true;
+//                        }
+                    }
+                }
+                break;
+            }
+            case LEFT: { // LEFT
+                for(int i = 0; i < MAX_ROWS; i++){
+                    for(int j = 1; j < MAX_COLS; j++){
+                        int currCell = getTileValue(i, j);
+                        if((getTileValue(i, j -1) == 0 && currCell != 0) || 
+                        		(getTileValue(i, j-1) == currCell)){
+                            return true;
+                        }
+//                        if(getTileValue(i, j -1) == 0){
+//                            return true;
+//                        }
+                    }
+                }
+                break;
+            }
+            case RIGHT: { // RIGHT
+                for(int i = 0; i < MAX_ROWS; i++){
+                    for(int j = 0; j < MAX_COLS - 1; j++){
+                        int currCell = getTileValue(i, j);
+                        if((getTileValue(i, j + 1) == 0 && currCell != 0) || 
+                        		(getTileValue(i, j+1) == currCell)){
+                        	return true;
+                        }
+//                        if(getTileValue(i, j + 1) == 0){
+//                            return true;
+//                        }
+                    }
+                }
+                break;
+            }
+//            case 5: {
+//                GAME_ACTIVE = false;
+//                return true;
+//            }
+        }
+        System.out.print("Invalid direction!\n");
+        return false;
+    }
+    
     public void moveBlocks(int dir) {
         switch(dir){
             case UP: { // UP
@@ -234,8 +309,9 @@ public class TFE extends Application {
         setTileValue(B.getRow(), B.getCol(), doubleValue);
         setTileValue(A.getRow(), A.getCol(), 0);
 
-        System.out.println("double " + doubleValue + " score " + score.getValue());
-        if (doubleValue > score.getValue()){ score.setValue(doubleValue); }
+        System.out.println("double " + doubleValue + " highestScore " + highestScore.getValue());
+        if (doubleValue > highestScore.getValue()){ highestScore.setValue(doubleValue); }
+        score.setValue(score.getValue() + doubleValue);
     }
 
     private void moveBlock(Cell A, Cell B){
@@ -246,7 +322,7 @@ public class TFE extends Application {
 
 //    @Override
     public void checkGameover() {
-        GAME_ACTIVE = !boardFilled && score.getValue() < goal;
+        GAME_ACTIVE = !boardFilled && highestScore.getValue() < goal;
     }
     
     int getTileValue(int row, int col) { return tileGrid[row][col].getValue(); }
@@ -276,7 +352,7 @@ public class TFE extends Application {
 //    }
 //
 //    @Override
-//    public int quit() { return score; }
+//    public int quit() { return highestScore; }
 
 //    TODO fill either 2 or 4
     public void fillTwo() {
