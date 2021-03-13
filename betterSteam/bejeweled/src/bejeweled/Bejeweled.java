@@ -63,7 +63,7 @@ public class Bejeweled extends Application {
                         swap(new_tile, selected);
                         selected = null;
                     }
-                    removeAllMatches(false);
+                    removeAllMatches(true);
                 });
             	
                 grid.setCell(i, j, new_tile);
@@ -163,7 +163,7 @@ public class Bejeweled extends Application {
             if (grid.getGrid()[i][col].getColorId() != current) {
                 if (tempToDelete.size() >= 3) {
                     toDelete.addAll(tempToDelete);
-                    System.out.println("verticalMatchs " + tempToDelete);
+//                    System.out.println("verticalMatchs " + tempToDelete);
                 }
                 tempToDelete.clear();
                 tempToDelete.add(new Cell(i, col));
