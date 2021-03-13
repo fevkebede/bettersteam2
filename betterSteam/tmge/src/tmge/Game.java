@@ -1,7 +1,7 @@
 package tmge;
 
-// probably should extend javafx Application to Bejeweled can extend it
-public abstract class Game {
+
+public abstract interface Game {
 //	public abstract void update();
 	public abstract void startGame();
 	public abstract void initGrid();

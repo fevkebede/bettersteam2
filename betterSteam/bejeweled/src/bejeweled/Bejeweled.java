@@ -3,27 +3,26 @@ package bejeweled;
 import tmge.Cell;
 
 import tmge.Grid;
+import tmge.PlayerData;
 import tmge.BejeweledTile;
 import tmge.TileFactory;
 
 import java.util.ArrayList;
 
-import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
 
-public class Bejeweled extends Application {
+public class Bejeweled {
+	
+	private PlayerData player;
 
     ArrayList<Cell> toDelete = new ArrayList<Cell>(); // List of locations to delete
     public static int MAX_ROWS = 7;//7;
@@ -40,7 +39,14 @@ public class Bejeweled extends Application {
     private IntegerProperty level = new SimpleIntegerProperty(1);
     private IntegerProperty goal = new SimpleIntegerProperty(500);
  
-    private Parent createContent() {
+    
+    public Bejeweled(PlayerData player) {
+    	this.player = player;
+    	
+    	System.out.println("Bejeweled Contructor for " + player.getName() );
+    }
+    
+    public GridPane createGame() {
     	GridPane root = new GridPane();
     	root.setPadding(new Insets(20, 20, 20, 20));
 
@@ -89,7 +95,6 @@ public class Bejeweled extends Application {
         textScore.textProperty().bind(score.asString("Score: %d"));
         textMoves.textProperty().bind(movesLeft.asString("Moves: %d"));
         textGoal.textProperty().bind(goal.asString("Goal: %d"));
-        
         
 
         root.add(title, 0, 0);
@@ -292,14 +297,14 @@ public class Bejeweled extends Application {
     }
     
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(createContent(), MAX_ROWS * TILE_SIZE + 200, MAX_COLS * TILE_SIZE + 200));
-        primaryStage.setTitle("Bejeweled");
-        primaryStage.show();
-    }
-    
-    public static void main(String[] args) {
-        launch(args);
-    }
+//    @Override
+//    public void start(Stage primaryStage) throws Exception {
+//        primaryStage.setScene(new Scene(createContent(), MAX_ROWS * TILE_SIZE + 200, MAX_COLS * TILE_SIZE + 200));
+//        primaryStage.setTitle("Bejeweled");
+//        primaryStage.show();
+//    }
+//    
+//    public static void main(String[] args) {
+//        launch(args);
+//    }
 }

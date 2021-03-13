@@ -1,19 +1,33 @@
 package tmge;
 
 public class PlayerData {
+	private String name;
+    private int highScore;
     private Statistics playerData;
-    private String name;
 
     public PlayerData(String name) {
         playerData = new Statistics();
         this.name = name;
     }
 
-    public void saveData(Statistics statistics) {
-        playerData = statistics;
+    public String getName() {
+    	return name;
     }
+    
+    
+	public int getHighScore() {
+		return highScore;
+	}
 
-    public Statistics retrieveData() {
-        return playerData;
-    }
+	public void setHighScore(int highScore) {
+		this.highScore = highScore;
+	}
+
+	public void saveData(Statistics statistics) {
+		playerData = statistics;
+	}
+	
+	public Statistics retrieveData() {
+		return playerData;
+	}
 }
