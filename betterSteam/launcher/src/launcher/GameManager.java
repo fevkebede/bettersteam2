@@ -5,17 +5,20 @@ import tmge.PlayerData;
 import bejeweled.Bejeweled;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 
 public class GameManager  extends Application {
-	private ArrayList<PlayerData> players = new ArrayList<PlayerData>();
+	private HashMap<String, PlayerData> players = new HashMap<String, PlayerData>();
 	private PlayerData currentPlayer;
 	
 	GridPane window = new GridPane();
@@ -54,10 +57,19 @@ public class GameManager  extends Application {
     	Button submit = new Button("Submit");
     	
     	submit.setOnAction(e -> {
-    		System.out.println(input.getText());
     		
-    		//add new player
-    		currentPlayer = new PlayerData(input.getText());
+    		String name = input.getText();
+    		System.out.println(name);
+    		
+    		// check if player exists
+    		if(players.containsKey(name)) {
+    			currentPlayer = players.get(name);
+    		}
+    		// add new player to map
+    		else {
+        		currentPlayer = new PlayerData(input.getText());
+        		players.put(name, currentPlayer);
+    		}
     		
     		clearScreen();
     		showMenu();
@@ -69,9 +81,12 @@ public class GameManager  extends Application {
     	
     }
     
-    private void showHighScores() {
-//    	for player in players, create Text for their scores
-//    	window.add(text, 0, playerIndex)
+    private void showHighScores() {    	
+    	Text bejeweledScore = new Text();
+    	bejeweledScore.setText("Bejeweled\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getBejeweledHighScore()));
+    	
+    	Text tfeScore = new Text();
+    	tfeScore.setText("2048\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getTfeHighScore()));
     	
     	Button close = new Button("Go Back");
     	
@@ -80,7 +95,36 @@ public class GameManager  extends Application {
     		showMenu();
     	});
     	
-    	window.add(close, 0, 0);
+    	window.add(tfeScore, 0, 1);
+    	window.add(bejeweledScore, 1, 1);
+    	window.add(close, 0, 3);
+    }
+    
+    private void showAllHighScores() {    	
+    	String bejeweledText = "Bejeweled\n--------------------\n";
+    	String tfeText = "2048\n--------------------\n";
+    	
+    	Iterator playersIt = players.entrySet().iterator(); 
+    	
+    	
+    	// Iterate through hashmap
+    	
+    	Text bejeweledScore = new Text();
+    	bejeweledScore.setText(bejeweledText);
+    	
+    	Text tfeScore = new Text();
+    	tfeScore.setText(tfeText);
+    	
+    	Button close = new Button("Go Back");
+    	
+    	close.setOnAction(e -> {
+    		clearScreen();
+    		showMenu();
+    	});
+    	
+    	window.add(tfeScore, 0, 1);
+    	window.add(bejeweledScore, 1, 1);
+    	window.add(close, 0, 3);
     }
     
     private void changePlayer() {
