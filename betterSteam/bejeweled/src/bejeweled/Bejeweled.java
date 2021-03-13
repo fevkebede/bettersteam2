@@ -36,13 +36,10 @@ public class Bejeweled extends Application {
     
 //    IntegerProperty allows for binding to update score on the screen automatically 
     private IntegerProperty score = new SimpleIntegerProperty();
-
-    private int movesLeft = 30;
-    private int level = 1;
-    private int goal = 500;
-    private Grid tempGrid;
-
-    
+    private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
+    private IntegerProperty level = new SimpleIntegerProperty(1);
+    private IntegerProperty goal = new SimpleIntegerProperty(500);
+ 
     private Parent createContent() {
     	GridPane root = new GridPane();
     	root.setPadding(new Insets(20, 20, 20, 20));
@@ -74,15 +71,33 @@ public class Bejeweled extends Application {
         removeAllMatches(false);
 
         Text title = new Text("Bejeweled");
+        Text textLevel = new Text();
+        Text textMoves = new Text();
+        Text textGoal  = new Text();
         Text textScore = new Text();
+//        Text movesLeft, , goal
+        
         
         title.setFont(Font.font(64));
+        
+        textLevel.setFont(Font.font(44));
         textScore.setFont(Font.font(44));
+        textMoves.setFont(Font.font(44));
+        textGoal.setFont(Font.font(44));
+        
+        textLevel.textProperty().bind(level.asString("Level: %d"));
         textScore.textProperty().bind(score.asString("Score: %d"));
+        textMoves.textProperty().bind(movesLeft.asString("Moves: %d"));
+        textGoal.textProperty().bind(goal.asString("Goal: %d"));
+        
+        
 
         root.add(title, 0, 0);
         root.add(board, 0, 1);
-        root.add(textScore, 0, 2);
+        root.add(textLevel,  0,  2);
+        root.add(textMoves, 0, 3);
+        root.add(textGoal, 0, 4);
+        root.add(textScore, 0, 5);
         return root;
     }
     
@@ -94,6 +109,7 @@ public class Bejeweled extends Application {
     
     private void swapColors(BejeweledTile a, BejeweledTile b) {
     	if (validMove(a,b)) {
+    		movesLeft.setValue(movesLeft.getValue()-1);
     		Paint a_color = a.getColor();
             int a_colorId = a.getColorId();
             a.setColor(b.getColor(), b.getColorId());
@@ -101,7 +117,7 @@ public class Bejeweled extends Application {
     	} 
     }
 
-////    TODO needs to make sure tiles to swap are neighbors
+//    TODO needs to make sure tiles to swap are neighbors
     private boolean validMove(BejeweledTile a, BejeweledTile b) {        
         if (a.getRow() == b.getRow()) {
         	return (b.getColumn() == a.getColumn()-1 || b.getColumn() == a.getColumn()+1);
@@ -122,11 +138,8 @@ public class Bejeweled extends Application {
         for (int i = 0; i < grid.getGrid()[0].length; i++) {
             verticalMatch(i);
         }
-       
-//        System.out.println(toDelete);
         if (toDelete.size() == 0) {
             swapColors(a,b);
-//            System.out.println("No match!");
         } else {
         	
         }
@@ -149,7 +162,6 @@ public class Bejeweled extends Application {
                 tempToDelete.add(new Cell(row, i));
                 if (i == grid.getGrid()[row].length-1 && tempToDelete.size() >= 3) {
                     toDelete.addAll(tempToDelete);
-//                    System.out.println("horizontalMatchs " + tempToDelete);
                 }
             }
         }
@@ -163,7 +175,6 @@ public class Bejeweled extends Application {
             if (grid.getGrid()[i][col].getColorId() != current) {
                 if (tempToDelete.size() >= 3) {
                     toDelete.addAll(tempToDelete);
-//                    System.out.println("verticalMatchs " + tempToDelete);
                 }
                 tempToDelete.clear();
                 tempToDelete.add(new Cell(i, col));
@@ -174,7 +185,6 @@ public class Bejeweled extends Application {
                 tempToDelete.add(new Cell(i, col));
                 if (i == grid.getGrid().length-1 && tempToDelete.size() >= 3) {
                     toDelete.addAll(tempToDelete);
-//                    System.out.println("verticalMatchs " + tempToDelete);
                 }
             }
         }
@@ -211,17 +221,18 @@ public class Bejeweled extends Application {
         
         if (POINT_FLAG) {
             score.setValue(score.getValue() + (10*toDelete.size()));
-            if (score.getValue() >= goal) {
-                level++;
-                goal+=500;
-                movesLeft = 30;
+            if (score.getValue() >= goal.getValue()) {
+            	goal.setValue(goal.getValue() + 250);
+            	level.setValue(level.getValue() + 1);
+            	
+            	score.setValue(0);
+            	movesLeft.setValue(30);
             }
         }
         toDelete.clear();
     }
 
     private void gravityColumn(int col) {
-//    	System.out.print("gravityColumn" + col + ": ");
         ArrayList<Integer> tempColumn = new ArrayList<Integer>();
         
         for (int i = 0; i < grid.getGrid().length; i++) {
@@ -243,7 +254,7 @@ public class Bejeweled extends Application {
     	
     
     private void printTiles() {
-//        System.out.println("\nTiles");
+        System.out.println("\nTiles");
         for (int i = 0; i < grid.getGrid().length; i++) {
             for (int j = 0; j < grid.getGrid()[i].length; j++) {
                 System.out.print(" " + grid.getGrid()[i][j] + " | ");
@@ -254,7 +265,7 @@ public class Bejeweled extends Application {
     }
    
     private void printBoard() {
-//        System.out.println("\nBOARD");
+        System.out.println("\nBOARD");
         for (int i = 0; i < grid.getGrid().length; i++) {
             for (int j = 0; j < grid.getGrid()[i].length; j++) {
             	System.out.print(" " + grid.getGrid()[i][j].getColorId() + " | ");
