@@ -60,6 +60,11 @@ public class BejeweledTile extends Parent {
     public boolean getFlag() {
     	return flagged;
     }
+    
+    public void updateColor(int newColorID) {
+    	this.colorId = newColorID;
+    	circle.setFill(TileFactory.colors[newColorID]);
+    }
 
     @Override
     public String toString() {

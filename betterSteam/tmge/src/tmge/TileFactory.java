@@ -12,7 +12,7 @@ public class TileFactory {
 	Random rand = new Random();
 //	boolean tfe;
 	
-	Color[] colors = new Color[] {
+	public static Color[] colors = new Color[] {
             Color.RED, Color.ORANGE, Color.YELLOW, Color.BLUE, Color.GREEN, Color.PURPLE, Color.SILVER, Color.CORAL 
     };
 	
@@ -42,7 +42,7 @@ public class TileFactory {
     	return colors[randomInt];
     }
 
-    private int getRandomInt() {
+    public int getRandomInt() {
     	return rand.nextInt(colors.length);
     }
     

@@ -6,6 +6,7 @@ public class Grid {
     public Grid(int rows, int cols) {
         grid = new BejeweledTile[rows][cols];
     }
+    
 
     public void updateCell(int row, int col, BejeweledTile val) {
         grid[row][col] = val;
