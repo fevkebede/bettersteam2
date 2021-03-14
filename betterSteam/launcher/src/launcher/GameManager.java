@@ -54,7 +54,7 @@ public class GameManager  extends Application {
     
     private void showLoginScreen() {
     	
-    	Label label = new Label("Enter player name");
+    	Label label = new Label("New player? Enter name!");
     	TextField input = new TextField();
     	input.setPromptText("Name");
 
@@ -84,11 +84,31 @@ public class GameManager  extends Application {
     		clearScreen();
     		showAllHighScores();
     	});
-    	    	
-    	window.add(label, 0, 0);
-    	window.add(input, 0	, 1);
-    	window.add(submit, 1, 1);
-    	window.add(highScores, 0, 2);
+    	
+    	int playerIndex = 1;
+    	if (!players.isEmpty()) {
+    		Text saved = new Text("Saved players");
+        	window.add(saved, 0, 0);
+        	
+        	
+        	for (Map.Entry mapElement : players.entrySet()) { 
+                String key = (String)mapElement.getKey(); 
+                
+                Button usernameButton = new Button(key);
+                usernameButton.setOnAction(e -> {
+                	currentPlayer = players.get(key);
+                	clearScreen();
+            		showMenu();
+                });
+                window.add(usernameButton, 0, playerIndex);
+                playerIndex++;
+            } 
+    	}
+    	
+    	window.add(label, 0, 0+playerIndex);
+    	window.add(input, 0	, 1+playerIndex);
+    	window.add(submit, 1, 1+playerIndex);
+    	window.add(highScores, 0, 2+playerIndex);
     	
     }
     
