@@ -27,6 +27,7 @@ public class GameManager  extends Application {
 	Button playBejeweled = new Button("Bejeweled");
 	Button viewHighScores = new Button("View Scores");
 	Button logout = new Button("Logout");
+	Button settings = new Button("Settings");
 	
 	public GameManager() {
 		System.out.println("GameManager Constructor");
@@ -89,6 +90,46 @@ public class GameManager  extends Application {
     	
     }
     
+    private void settingScreen() {
+    	Text bejeweledScore = new Text();
+    	bejeweledScore.setText("Bejeweled\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getBejeweledHighScore()));
+    	
+    	Text tfeScore = new Text();
+    	tfeScore.setText("2048\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getTfeHighScore()));
+    	
+    	
+    	Button clearTfe = new Button("Clear 2048");
+    	Button clearBejeweled = new Button("Clear Bejeweled");
+    	Button clearAll = new Button("Clear all high scores");
+    	Button close = new Button("Go Back");
+    	
+    	close.setOnAction(e -> {
+    		clearScreen();
+    		showMenu();
+    	});
+    	clearTfe.setOnAction(e -> {
+    		currentPlayer.clearTfeHighScore();
+    		clearScreen();
+    		settingScreen();
+    	});
+    	clearBejeweled.setOnAction(e -> {
+    		currentPlayer.clearBejeweledHighScore();
+    		clearScreen();
+    		settingScreen();
+    	});
+    	clearAll.setOnAction(e -> {
+    		currentPlayer.clearAllHighScores();
+    		clearScreen();
+    		settingScreen();
+    	});
+    	window.add(tfeScore, 0, 1);
+    	window.add(bejeweledScore, 1, 1);
+    	window.add(clearTfe, 0, 2);
+    	window.add(clearBejeweled, 1, 2);
+    	window.add(clearAll, 0, 3);
+    	window.add(close, 0, 4);
+    }
+    
     private void showHighScores() {    	
     	Text bejeweledScore = new Text();
     	bejeweledScore.setText("Bejeweled\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getBejeweledHighScore()));
@@ -148,7 +189,8 @@ public class GameManager  extends Application {
     	window.add(playBejeweled, 0, 0);
     	window.add(playTFE, 1, 0);
     	window.add(viewHighScores, 0, 1);
-    	window.add(logout, 1, 1);
+    	window.add(logout, 0, 2);
+    	window.add(settings, 1, 1);
     	
     }
     
@@ -201,6 +243,10 @@ public class GameManager  extends Application {
     		showLoginScreen();
     	});
     	
+    	settings.setOnAction(e -> {
+    		clearScreen();
+    		settingScreen();
+    	});
     	
     }
     

@@ -38,4 +38,17 @@ public class PlayerData {
 	public Statistics retrieveData() {
 		return playerData;
 	}
+	
+	public void clearBejeweledHighScore() {
+		playerData.setBejeweledHighScore(0);
+	}
+	
+	public void clearTfeHighScore() {
+		playerData.setTfeHighScore(0);
+	}
+	
+	public void clearAllHighScores() {
+		clearBejeweledHighScore();
+		clearTfeHighScore();
+	}
 }
