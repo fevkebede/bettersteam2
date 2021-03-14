@@ -58,8 +58,6 @@ public class Bejeweled extends Game {
                     else {
 
                         swap(new_tile, selected);
-                        
-                        //selected.removeSelected();
                         selected = null;
                     }
                     removeAllMatches(true);
@@ -73,7 +71,6 @@ public class Bejeweled extends Game {
             }
         }
         
-//        spacing between grid row/col
         board.setHgap(5);
         board.setVgap(5);
         
@@ -121,12 +118,6 @@ public class Bejeweled extends Game {
     		int val = a.getValue();
     		a.setValue(b.getValue());
     		b.setValue(val);
-    		
-//    		Paint a_color = a.getColor();
-//            int a_colorId = a.getColorId();
-//            
-//            a.setColor(b.getColor(), b.getColorId());
-//            b.setColor(a_color, a_colorId);
     	} 
     }
 
@@ -285,26 +276,4 @@ public class Bejeweled extends Game {
 //    	TODO check for possible moves
     	return (movesLeft.getValue() <= 0);
     }
-    
-//    private void printTiles() {
-//        System.out.println("\nTiles");
-//        for (int i = 0; i < grid.getGrid().length; i++) {
-//            for (int j = 0; j < grid.getGrid()[i].length; j++) {
-//                System.out.print(" " + grid.getGrid()[i][j] + " | ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println();
-//    }
-//   
-//    private void printBoard() {
-//        System.out.println("\nBOARD");
-//        for (int i = 0; i < grid.getGrid().length; i++) {
-//            for (int j = 0; j < grid.getGrid()[i].length; j++) {
-//            	System.out.print(" " + grid.getGrid()[i][j].getValue() + " | ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println();
-//    }
 }

@@ -7,6 +7,10 @@ public class BejeweledTileFactory extends TileFactory {
 	
 	public static int BEJEWELED_TILE_SIZE = 50;
 	
+	static Color[] colors = new Color[] {
+            Color.RED, Color.ORANGE, Color.YELLOW, Color.BLUE, Color.GREEN, Color.PURPLE, Color.SILVER, Color.CORAL 
+    };
+	
 //	private BejeweledTileFactory() {}
 	
 	public static BejeweledTileFactory getInstance() {
@@ -20,7 +24,7 @@ public class BejeweledTileFactory extends TileFactory {
 		return new BejeweledTile(row, col, colors[colorId], colorId, BEJEWELED_TILE_SIZE);
 	}
 	
-//	public int getRandomColorId() {
-//    	return rand.nextInt(colors.length);
-//    }
+	public int getRandomColorId() {
+    	return rand.nextInt(colors.length);
+    }
 }

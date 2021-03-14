@@ -1,15 +1,10 @@
 package tmge;
 
-//import javafx.geometry.Point2D;
-//import javafx.scene.Parent;
 import javafx.scene.paint.Color;
-//import javafx.scene.paint.Paint;
 import javafx.scene.shape.StrokeType;
 
 
 public class BejeweledTile extends Tile {
-//    private Circle circle;
-//    private int size;
     private int colorId; // used for comparisons since Color is an object
     private boolean flagged = false;
 
@@ -33,7 +28,6 @@ public class BejeweledTile extends Tile {
     }
 
     public void setValue(int newColor) {
-//    	if (val == 0) val = null;
     	this.colorId = newColor;
     	setFill(BejeweledTileFactory.colors[newColor]);
     }
@@ -48,7 +42,6 @@ public class BejeweledTile extends Tile {
     	setStroke(null);
     }
     
-    
     public void setFlag(boolean flag) {
     	flagged = flag;
     }
@@ -62,6 +55,4 @@ public class BejeweledTile extends Tile {
     	if (flagged) return "(null)";
     	return String.format("(%d,%d) ", getRow(), getColumn());
     }
-
-
 }
