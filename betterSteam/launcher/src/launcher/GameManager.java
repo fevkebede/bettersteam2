@@ -22,9 +22,9 @@ public class GameManager  extends Application {
 	private HashMap<String, PlayerData> players = new HashMap<String, PlayerData>();
 	private PlayerData currentPlayer;
 	
-	private PlayerData player2 = null;
-	private boolean isMultiplayer = false;
-	private int currentGame = -1;
+	private PlayerData player2 = null; // Creating player2 placeholder
+	private boolean isMultiplayer = false; // Identify if multiplayer game is being played
+	private int currentGame = -1; // Identifies which game is being played - only matters for multiplayer
 	
 	GridPane window = new GridPane();
 	Button playTFE = new Button("2048");
@@ -106,12 +106,10 @@ public class GameManager  extends Application {
     }
     
     private void setCurrentPlayer(String name) {
-    	// check if player exists
-		if(players.containsKey(name)) {
+		if(players.containsKey(name)) { // check if player exists
 			currentPlayer = players.get(name);
 		}
-		// add new player to map
-		else {
+		else { // add new player to map
     		currentPlayer = new PlayerData(name);
     		players.put(name, currentPlayer);
 		}
@@ -218,13 +216,13 @@ public class GameManager  extends Application {
     }
     
     public void onEndGame() {
-    	if(isMultiplayer && player2 == null) {
+    	if(isMultiplayer && player2 == null) { // first player finished, continue to second player turn
     		secondPlayerTurn();
     	}
-    	else if(isMultiplayer && player2 != null) {
+    	else if(isMultiplayer && player2 != null) { // both players finished, continue to winner's screen
     		winnerScreen();
     	}
-    	else {
+    	else { // is single player, go back to main menu
         	clearScreen();
         	showMenu();
     	}
@@ -234,7 +232,7 @@ public class GameManager  extends Application {
     	window.getChildren().clear();
     }
     
-    private void secondPlayerTurn() {
+    private void secondPlayerTurn() { // run second game instance for second player
     	clearScreen();
     	
     	Function<Integer, Integer> endGame = (e) -> {
@@ -245,10 +243,9 @@ public class GameManager  extends Application {
         Label p2NameLabel = new Label("Enter Player 2's Name:");
     	Button goHome = new Button("Go Home");
     	
-    	// get new player name
 		Button start = new Button("Start!");
 		TextField input = new TextField();
-    	input.setPromptText("Enter Second Player Name");
+    	input.setPromptText("Enter Second Player Name"); // get new player name
     	
     	goHome.setOnAction(e -> {
     		clearScreen();
@@ -257,22 +254,19 @@ public class GameManager  extends Application {
     	
     	if(currentGame == 0) {
     		start.setOnAction(e -> {
-        		// set second player
-        		String name = input.getText();
+        		String name = input.getText(); // set second player
     			player2 = new PlayerData(name);
         		
-        		// check if player exists
-        		if(!players.containsKey(name)){
+        		if(!players.containsKey(name)){ // check if player exists
             		players.put(name, player2);
         		}
     			
     			Label label = new Label("It's now " + player2.getName() + "'s turn!");
     			label.setFont(Font.font(20));
     			
-    			// for second player
     			clearScreen();
         		System.out.println("run tge");
-    			TFE tfe = new TFE(player2, endGame);
+    			TFE tfe = new TFE(player2, endGame); // begin second player turn
     			GridPane tfe_board = tfe.createGame();
     			window.add(tfe_board, 0, 2);
     			window.add(label, 0, 3);
@@ -280,20 +274,17 @@ public class GameManager  extends Application {
     	}
     	else if(currentGame == 1) {
     		start.setOnAction(e -> {
-        		// set second player
-        		String name = input.getText();
+        		String name = input.getText(); // set second player
     			player2 = new PlayerData(name);
         		
-        		// check if player exists
-        		if(!players.containsKey(name)){
+        		if(!players.containsKey(name)){ // check if player exists
             		players.put(name, player2);
         		}
     			
     			Label label = new Label("It's now " + player2.getName() + "'s turn!");
     			label.setFont(Font.font(20));
     			
-    			// for second player
-    			clearScreen();
+    			clearScreen(); // begin second player turn
         		System.out.println("run tge");
         		Bejeweled bejeweled = new Bejeweled(player2, endGame);
     	    	GridPane bejeweled_board = bejeweled.createGame();
@@ -331,8 +322,8 @@ public class GameManager  extends Application {
     			
     	    	multiplayer.setOnAction(e -> {
     	    		clearScreen();
-    	    		isMultiplayer = true;
-    	    		currentGame = 0;
+    	    		isMultiplayer = true; // set multiplayer setting to true
+    	    		currentGame = 0; // set current game to tfe (0 for tfe, 1 for bejeweled)
     	    		
     	    		Label label = new Label(currentPlayer.getName() + " is going first!");
     	    		label.setFont(Font.font(20));
@@ -360,8 +351,8 @@ public class GameManager  extends Application {
     			
     	    	multiplayer.setOnAction(e -> {
     	    		clearScreen();
-    	    		isMultiplayer = true;
-    	    		currentGame = 1;
+    	    		isMultiplayer = true; // set multiplayer to true
+    	    		currentGame = 1; // set current game to tfe (0 for tfe, 1 for bejeweled)
     	    		
     	    		Label label = new Label(currentPlayer.getName() + " is going first!");
     	    		label.setFont(Font.font(20));
@@ -385,15 +376,15 @@ public class GameManager  extends Application {
     	window.add(back, 0, 1);
     }
     
-    private void winnerScreen() {
+    private void winnerScreen() { // prints the winner between two players in multiplayer mode
     	clearScreen();
     	
     	Button close = new Button("Go Back to Main Menu");
     	
     	close.setOnAction(e -> {
-    		player2 = null;
-    		isMultiplayer = false;
-    		currentGame = -1;
+    		player2 = null; // removes second player
+    		isMultiplayer = false; // returns to single player mode
+    		currentGame = -1; // returns to -1 because multiplayer mode is not in session
     		clearScreen();
     		showMenu();
     	}); 
