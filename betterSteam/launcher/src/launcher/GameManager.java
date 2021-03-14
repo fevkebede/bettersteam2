@@ -80,7 +80,7 @@ public class GameManager  extends Application {
     	
     	int playerIndex = 1;
     	if (!players.isEmpty()) {
-    		Text saved = new Text("Saved players");
+    		Text saved = new Text("Saved Players");
         	window.add(saved, 0, 0);
         	
         	
@@ -242,6 +242,7 @@ public class GameManager  extends Application {
             return e;
         };
     	
+        Label p2NameLabel = new Label("Enter Player 2's Name:");
     	Button goHome = new Button("Go Home");
     	
     	// get new player name
@@ -300,10 +301,10 @@ public class GameManager  extends Application {
     			window.add(label, 0, 3);
         	});
     	}
-    	
-    	window.add(input, 0, 0);
-    	window.add(start, 1, 0);
-    	window.add(goHome, 0, 1);
+    	window.add(p2NameLabel, 0, 0);
+    	window.add(input, 0, 1);
+    	window.add(start, 1, 1);
+    	window.add(goHome, 0, 2);
     }
     
     private void startGame(GameType type) {
@@ -316,6 +317,7 @@ public class GameManager  extends Application {
     
         Button singleplayer = new Button("Singleplayer");
     	Button multiplayer = new Button("Multiplayer");
+    	Button back = new Button("Go Back");
     	
     	switch(type) {
     		case TFE:
@@ -373,9 +375,14 @@ public class GameManager  extends Application {
     	    	
     	    	window.add(singleplayer, 0, 0);
     	    	window.add(multiplayer, 1, 0);
-    	    	
     			break;
     	}
+    	back.setOnAction(e -> {
+    		clearScreen();
+    		showMenu();
+    	});
+    	
+    	window.add(back, 0, 1);
     }
     
     private void winnerScreen() {
