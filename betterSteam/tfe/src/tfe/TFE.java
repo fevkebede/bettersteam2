@@ -56,14 +56,24 @@ public class TFE extends Game {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
             
-            	Text text = new Text();
-            	text.setFont(Font.font(40));
+            	Text tileLabel = new Text();
+            	tileLabel.setFont(Font.font(40));
             	
-            	TFETile new_tile = tileFactory.createTFETile(j, i, text);
+            	TFETile new_tile = tileFactory.createTFETile(j, i);
+            	
+            	IntegerProperty tileValue = new_tile.getValueProperty();
+            	
+            	tileValue.addListener((property, oldVal, newVal) -> {
+                	if (newVal.intValue() == 0) {
+                		tileLabel.setText("");
+                	}
+                	else {   
+                		tileLabel.setText(String.valueOf(newVal));
+                	}
+            	});
             	
 //            	StackPane layers text over tile
-            	board.add(new StackPane(new_tile, text), j, i);
-//            	board.add(new_tile, j, i);
+            	board.add(new StackPane(new_tile, tileLabel), j, i);
             	
                 grid.setTile(i, j, new_tile);
             }

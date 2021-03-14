@@ -23,9 +23,9 @@ public abstract class TileFactory {
 //    };
 	
     
-//    public TFETile createTFETile(int row, int col, Text label) {
-//    	return new TFETile(row, col, TFE_TILE_SIZE, label);
-//    }
+    public TFETile createTFETile(int row, int col) {
+    	return new TFETile(row, col, TFE_TILE_SIZE);
+    }
     
 
 //    public BejeweledTile createBejeweledTile(int row, int col) {
