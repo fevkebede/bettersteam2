@@ -228,6 +228,33 @@ public class GameManager  extends Application {
     	window.getChildren().clear();
     }
     
+    private void playerNumberScreen() {
+    	Function<Integer, Integer> endGame = (e) -> {
+            onEndGame();
+            return e;
+        };
+        
+        
+    	
+    	Button singleplayer = new Button("Singleplayer");
+    	Button multiplayer = new Button("Multiplayer");
+    	Button close = new Button("Go Back");
+    	
+    	singleplayer.setOnAction(e -> {
+    		clearScreen();
+    		
+    	});
+    	
+    	close.setOnAction(e -> {
+    		clearScreen();
+    		showMenu();
+    	});
+    	
+    	window.add(singleplayer, 0, 0);
+    	window.add(multiplayer, 1, 0);
+    	window.add(close, 0, 1);
+    }
+    
     private void startGame(GameType type) {
     	clearScreen();
     	
@@ -238,10 +265,16 @@ public class GameManager  extends Application {
     
     	switch(type) {
     		case TFE:
+    			
+    			// New screen
+    			// Ask singleplayer or multiplayer
+    			// if single, start game
+    			// else (multiplayer), ask for new name
+    			//           display winner at top of page
+    			
     			System.out.println("run tge");
     			TFE tfe = new TFE(currentPlayer, endGame);
     			GridPane tfe_board = tfe.createGame();
-//    			tfe.addKeyPressListeners(tfe_board);
     			
     			window.add(tfe_board, 0, 2);
     			break;
