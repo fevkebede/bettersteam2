@@ -5,24 +5,29 @@ import tmge.PlayerData;
 import bejeweled.Bejeweled;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 
 public class GameManager  extends Application {
-	private ArrayList<PlayerData> players = new ArrayList<PlayerData>();
+	private HashMap<String, PlayerData> players = new HashMap<String, PlayerData>();
 	private PlayerData currentPlayer;
 	
 	GridPane window = new GridPane();
 	Button playTFE = new Button("2048");
 	Button playBejeweled = new Button("Bejeweled");
 	Button viewHighScores = new Button("View Scores");
-	Button switchPlayer = new Button("Switch Player");
+	Button logout = new Button("Logout");
+	Button settings = new Button("Settings");
 	
 	public GameManager() {
 		System.out.println("GameManager Constructor");
@@ -52,26 +57,85 @@ public class GameManager  extends Application {
     	input.setPromptText("Name");
 
     	Button submit = new Button("Submit");
+    	Button highScores = new Button("High Scores");
     	
     	submit.setOnAction(e -> {
-    		System.out.println(input.getText());
     		
-    		//add new player
-    		currentPlayer = new PlayerData(input.getText());
+    		String name = input.getText();
+    		System.out.println(name);
+    		
+    		// check if player exists
+    		if(players.containsKey(name)) {
+    			currentPlayer = players.get(name);
+    		}
+    		// add new player to map
+    		else {
+        		currentPlayer = new PlayerData(input.getText());
+        		players.put(name, currentPlayer);
+    		}
     		
     		clearScreen();
     		showMenu();
+    	});
+    	
+    	highScores.setOnAction(e -> {
+    		clearScreen();
+    		showAllHighScores();
     	});
     	    	
     	window.add(label, 0, 0);
     	window.add(input, 0	, 1);
     	window.add(submit, 1, 1);
+    	window.add(highScores, 0, 2);
     	
     }
     
-    private void showHighScores() {
-//    	for player in players, create Text for their scores
-//    	window.add(text, 0, playerIndex)
+    private void settingScreen() {
+    	Text bejeweledScore = new Text();
+    	bejeweledScore.setText("Bejeweled\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getBejeweledHighScore()));
+    	
+    	Text tfeScore = new Text();
+    	tfeScore.setText("2048\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getTfeHighScore()));
+    	
+    	
+    	Button clearTfe = new Button("Clear 2048");
+    	Button clearBejeweled = new Button("Clear Bejeweled");
+    	Button clearAll = new Button("Clear all high scores");
+    	Button close = new Button("Go Back");
+    	
+    	close.setOnAction(e -> {
+    		clearScreen();
+    		showMenu();
+    	});
+    	clearTfe.setOnAction(e -> {
+    		currentPlayer.clearTfeHighScore();
+    		clearScreen();
+    		settingScreen();
+    	});
+    	clearBejeweled.setOnAction(e -> {
+    		currentPlayer.clearBejeweledHighScore();
+    		clearScreen();
+    		settingScreen();
+    	});
+    	clearAll.setOnAction(e -> {
+    		currentPlayer.clearAllHighScores();
+    		clearScreen();
+    		settingScreen();
+    	});
+    	window.add(tfeScore, 0, 1);
+    	window.add(bejeweledScore, 1, 1);
+    	window.add(clearTfe, 0, 2);
+    	window.add(clearBejeweled, 1, 2);
+    	window.add(clearAll, 0, 3);
+    	window.add(close, 0, 4);
+    }
+    
+    private void showHighScores() {    	
+    	Text bejeweledScore = new Text();
+    	bejeweledScore.setText("Bejeweled\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getBejeweledHighScore()));
+    	
+    	Text tfeScore = new Text();
+    	tfeScore.setText("2048\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getTfeHighScore()));
     	
     	Button close = new Button("Go Back");
     	
@@ -80,7 +144,39 @@ public class GameManager  extends Application {
     		showMenu();
     	});
     	
-    	window.add(close, 0, 0);
+    	window.add(tfeScore, 0, 1);
+    	window.add(bejeweledScore, 1, 1);
+    	window.add(close, 0, 3);
+    }
+    
+    private void showAllHighScores() {    	
+    	String bejeweledText = "Bejeweled High Scores\n-------------------------\n";
+    	String tfeText = "2048 High Scores\n-------------------------\n";
+    	
+    	for (Map.Entry mapElement : players.entrySet()) { 
+            String key = (String)mapElement.getKey(); 
+            PlayerData value = ((PlayerData)mapElement.getValue()); 
+  
+            tfeText += key + ":\t\t" + String.valueOf(value.retrieveData().getTfeHighScore()) + "\n"; 
+            bejeweledText += key + ":\t\t" + String.valueOf(value.retrieveData().getBejeweledHighScore()) + "\n"; 
+        } 
+        
+    	Text bejeweledScore = new Text();
+    	bejeweledScore.setText(bejeweledText);
+    	
+    	Text tfeScore = new Text();
+    	tfeScore.setText(tfeText);
+    	
+    	Button close = new Button("Go Back");
+    	
+    	close.setOnAction(e -> {
+    		clearScreen();
+    		showLoginScreen();
+    	});
+    	
+    	window.add(tfeScore, 0, 1);
+    	window.add(bejeweledScore, 1, 1);
+    	window.add(close, 0, 3);
     }
     
     private void changePlayer() {
@@ -93,7 +189,8 @@ public class GameManager  extends Application {
     	window.add(playBejeweled, 0, 0);
     	window.add(playTFE, 1, 0);
     	window.add(viewHighScores, 0, 1);
-    	window.add(switchPlayer, 1, 1);
+    	window.add(logout, 0, 2);
+    	window.add(settings, 1, 1);
     	
     }
     
@@ -140,11 +237,16 @@ public class GameManager  extends Application {
     		showHighScores();
     	});
     	
-    	switchPlayer.setOnAction(e -> {
-//    		clearScreen();
-    		changePlayer();
+    	logout.setOnAction(e -> {
+    		currentPlayer = null;
+    		clearScreen();
+    		showLoginScreen();
     	});
     	
+    	settings.setOnAction(e -> {
+    		clearScreen();
+    		settingScreen();
+    	});
     	
     }
     
