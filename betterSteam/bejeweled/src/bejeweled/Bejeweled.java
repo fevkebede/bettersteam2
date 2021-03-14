@@ -305,7 +305,7 @@ public class Bejeweled {
 //  @Override
     public boolean checkGameover() {
 //    	TODO check for possible moves
-    	return (movesLeft.getValue() <= 0) && (score.getValue() < goal.getValue());
+    	return (movesLeft.getValue() <= 0);
     }
     
 
