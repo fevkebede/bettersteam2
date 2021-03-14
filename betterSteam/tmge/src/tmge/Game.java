@@ -1,9 +1,12 @@
 package tmge;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public abstract class Game {
+	public IntegerProperty score = new SimpleIntegerProperty();
 //	Grid grid;
 	
 //	public abstract void update();
@@ -26,10 +29,16 @@ public abstract class Game {
 //	}
 	
 	public Text createTitle(String name) {
-		
 		Text title = new Text(name);
 		title.setFont(Font.font(64));
 		return title;
+	}
+	
+	public Text createScoreText(String score) {
+		Text scoreText = new Text(score);
+		scoreText.setFont(Font.font(44));
+		scoreText.textProperty().bind(this.score.asString("Score: %d"));
+		return scoreText;
 	}
 
 }

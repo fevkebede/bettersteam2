@@ -1,7 +1,7 @@
 package bejeweled;
 
 import tmge.Cell;
-
+import tmge.Game;
 import tmge.Grid;
 import tmge.PlayerData;
 import tmge.BejeweledTile;
@@ -18,7 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 
-public class Bejeweled {
+public class Bejeweled extends Game{
 	
 	private PlayerData player;
 
@@ -30,8 +30,6 @@ public class Bejeweled {
     private TileFactory tileFactory = new TileFactory();
     private BejeweledTile selected = null;
     
-//    IntegerProperty allows for binding to update score on the screen automatically 
-    private IntegerProperty score = new SimpleIntegerProperty();
     private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
     private IntegerProperty level = new SimpleIntegerProperty(1);
     private IntegerProperty goal = new SimpleIntegerProperty(500);
@@ -47,8 +45,6 @@ public class Bejeweled {
     
     public GridPane createGame() {
     	GridPane root = new GridPane();
-//    	root.setPadding(new Insets(20, 20, 20, 20));
-
     	GridPane board = new GridPane();
         
         for (int i = 0; i < MAX_ROWS; i++) {
@@ -86,34 +82,25 @@ public class Bejeweled {
         
         removeAllMatches(false);
 
-        Text title = new Text("Bejeweled");
         Text textLevel = new Text();
         Text textMoves = new Text();
         Text textGoal  = new Text();
-        Text textScore = new Text();
+        Text textScore = createScoreText("Score: 0");
         Button quit = new Button("Quit");
         
         quit.setOnAction(e -> {
     		quit();
     	});
-//        Text movesLeft, , goal
-        
-        
-        title.setFont(Font.font(64));
         
         textLevel.setFont(Font.font(44));
-        textScore.setFont(Font.font(44));
         textMoves.setFont(Font.font(44));
         textGoal.setFont(Font.font(44));
         
         textLevel.textProperty().bind(level.asString("Level: %d"));
-        textScore.textProperty().bind(score.asString("Score: %d"));
         textMoves.textProperty().bind(movesLeft.asString("Moves: %d"));
         textGoal.textProperty().bind(goal.asString("Goal: %d"));
         
-        
-
-        root.add(title, 0, 0);
+        root.add(createTitle("Bejeweled"), 0, 0);
         root.add(board, 0, 1);
         root.add(textLevel,  0,  2);
         root.add(textMoves, 0, 3);

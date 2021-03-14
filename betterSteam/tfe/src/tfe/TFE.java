@@ -32,7 +32,6 @@ public class TFE extends Game {
     ArrayList<Cell> toDelete = new ArrayList<Cell>();
     private TileFactory tileFactory = new TileFactory();
     private IntegerProperty highestScore = new SimpleIntegerProperty(2);
-    private IntegerProperty score = new SimpleIntegerProperty(0);
     private boolean boardFilled = false;
     
     public static int MAX_ROWS = 4;
@@ -77,9 +76,8 @@ public class TFE extends Game {
         fillTwo();
         fillTwo();
 
-        Text title = createTitle("2048");
         Text highestBrick = new Text();
-        Text playerScore = new Text();
+        Text playerScore = createScoreText("Score: 0");
         
         Button up = new Button("Up");
         Button down = new Button("Down");
@@ -95,18 +93,12 @@ public class TFE extends Game {
         
         ButtonBar options = new ButtonBar();
         options.getButtons().addAll(up, down, left, right);
-        
-//        title.setFont(Font.font(64));
+ 
         highestBrick.setFont(Font.font(44));
         highestBrick.textProperty().bind(highestScore.asString("Highest Brick: %d"));
         
-        playerScore.setFont(Font.font(44));
-        playerScore.textProperty().bind(score.asString("Score: %d"));
-
-        
-//        add(item_to_add, colInd, rowInd, int colspan, int rowspan)
 //        root = 2 cols x 5 rows
-        root.add(title, 0, 0, 2, 1);
+        root.add(createTitle("2048"), 0, 0, 2, 1);
         root.add(board, 0, 1, 1, 2);
         root.add(options, 0, 3);
         root.add(highestBrick, 1, 1);
