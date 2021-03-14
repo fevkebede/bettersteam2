@@ -220,35 +220,33 @@ public class Bejeweled extends Game{
                 CHECKING = false;
                 
             } else {
-                markDeletion(FLAG); // CHANGE TO -1
                 for (int i = 0; i < grid.getGrid()[0].length; i++) {
                     gravityColumn(i); // SHIFT EACH COLUMN DOWN
                 }    
+                if (FLAG) { save(); }
+                toDelete.clear();
             }
         }
     }
-
-    private void markDeletion(boolean POINT_FLAG) {
-        for (int i = 0; i < toDelete.size(); i++) {
-            int row = toDelete.get(i).getRow();
-            int col = toDelete.get(i).getCol();
-            grid.getGrid()[row][col].setFlag(true); // flag tile that should change color
-        }      
-        if (POINT_FLAG) { save(); }
-        toDelete.clear();
+    
+    private boolean inToDelete(int row, int col) {
+    	for (int i = 0; i < toDelete.size(); i++) {
+    		if (toDelete.get(i).getRow() == row && toDelete.get(i).getCol() == col) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     private void gravityColumn(int col) {
         ArrayList<Integer> tempColumn = new ArrayList<Integer>();
         
         for (int i = 0; i < grid.getGrid().length; i++) {
-            if (grid.getGrid()[i][col].getFlag() == false ) {
-                tempColumn.add(grid.getGrid()[i][col].getValue());
-            } else {
-            	grid.getGrid()[i][col].setFlag(false);
-            }
+        	if (!inToDelete(i, col)) {
+        		tempColumn.add(grid.getGrid()[i][col].getValue());
+        	}
         }      
-
+    	
         while (tempColumn.size() < MAX_COLS)  {
             tempColumn.add(0, tileFactory.getRandomColorId());
         }
