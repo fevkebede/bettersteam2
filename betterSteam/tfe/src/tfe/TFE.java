@@ -1,9 +1,10 @@
 package tfe;
 
 
-//import tmge.Game;
+import tmge.Game;
 import tmge.Cell;
 import tmge.TFETile;
+import tmge.Tile;
 import tmge.TileFactory;
 import tmge.PlayerData;
 
@@ -20,11 +21,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 
-public class TFE {
+public class TFE extends Game {
 	
 //	TODO use grid 
-	private PlayerData player;
 	private TFETile[][] tileGrid = new TFETile[MAX_ROWS][MAX_COLS];
+	private PlayerData player;
 	Function<Integer, Integer> function;
 	
 	
@@ -76,7 +77,7 @@ public class TFE {
         fillTwo();
         fillTwo();
 
-        Text title = new Text("2048");
+        Text title = createTitle("2048");
         Text highestBrick = new Text();
         Text playerScore = new Text();
         
@@ -95,7 +96,7 @@ public class TFE {
         ButtonBar options = new ButtonBar();
         options.getButtons().addAll(up, down, left, right);
         
-        title.setFont(Font.font(64));
+//        title.setFont(Font.font(64));
         highestBrick.setFont(Font.font(44));
         highestBrick.textProperty().bind(highestScore.asString("Highest Brick: %d"));
         
