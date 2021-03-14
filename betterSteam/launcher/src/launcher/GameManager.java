@@ -15,6 +15,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -187,11 +188,14 @@ public class GameManager  extends Application {
     
     
     private void showMenu() {
-    	window.add(playBejeweled, 0, 0);
-    	window.add(playTFE, 1, 0);
-    	window.add(viewHighScores, 0, 1);
-    	window.add(logout, 0, 2);
-    	window.add(settings, 1, 1);
+    	Text welcome = new Text(String.format("Welcome, %s!", currentPlayer.getName()));
+    	welcome.setFont(Font.font(20));
+    	window.add(welcome, 0, 0);
+    	window.add(playBejeweled, 0, 1);
+    	window.add(playTFE, 1, 1);
+    	window.add(viewHighScores, 0, 2);
+    	window.add(logout, 0, 3);
+    	window.add(settings, 1, 2);
     	
     }
     

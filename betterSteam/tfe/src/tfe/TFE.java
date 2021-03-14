@@ -41,6 +41,7 @@ public class TFE {
     private boolean GAME_ACTIVE = true;
     
     public TFE(PlayerData player, Function<Integer, Integer> function) {
+    	this.function = function;
     	this.player = player;
     	System.out.println("TFE Contructor " + player.getName() );
     	
@@ -83,7 +84,9 @@ public class TFE {
         Button down = new Button("Down");
         Button left = new Button("Left");
         Button right = new Button("Right");
+        Button quit = new Button("Quit");
         
+        quit.setOnAction(e -> { quit(); });
         up.setOnAction(e -> { if (validMove(Move.UP)) handleMove(Move.UP); });
         down.setOnAction(e -> { if (validMove(Move.DOWN)) handleMove(Move.DOWN); });
         left.setOnAction(e -> { if (validMove(Move.LEFT)) handleMove(Move.LEFT); });
@@ -101,12 +104,13 @@ public class TFE {
 
         
 //        add(item_to_add, colInd, rowInd, int colspan, int rowspan)
-//        root = 2 cols x 4 rows
+//        root = 2 cols x 5 rows
         root.add(title, 0, 0, 2, 1);
         root.add(board, 0, 1, 1, 2);
         root.add(options, 0, 3);
         root.add(highestBrick, 1, 1);
         root.add(playerScore, 1, 2);
+        root.add(quit, 0, 4);
         
         return root;
     }
@@ -353,7 +357,12 @@ public class TFE {
 //    }
 //
 //    @Override
-//    public int quit() { return highestScore; }
+    public void quit() { 
+    	player.setHighScore(0, score.getValue());
+//        System.out.println(player.getHighScore());
+        player.setInGame(false);
+        function.apply(1);
+    }
 
 //    TODO fill either 2 or 4
     public void fillTwo() {

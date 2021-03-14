@@ -30,11 +30,13 @@ public class PlayerData {
 				if (playerData.getTfeHighScore() < highScore) {
 					playerData.setTfeHighScore(highScore);
 				}
+				break;
 			}
 			case 1: {
 				if (playerData.getBejeweledHighScore() < highScore) {
 					playerData.setBejeweledHighScore(highScore);
 				}
+				break;
 			}
 		}
 	}
