@@ -1,6 +1,5 @@
 package tfe;
 
-
 import tmge.Game;
 import tmge.Grid;
 import tmge.Cell;
@@ -17,14 +16,13 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 
 public class TFE extends Game {
 	private final static int ROWS = 4;
-    private final int COLUMNS = 4;
+    private final static int COLUMNS = 4;
     
     private TFETileFactory tfeTileFactory = TFETileFactory.getInstance();
     private IntegerProperty highestScore = new SimpleIntegerProperty(2);
@@ -34,48 +32,21 @@ public class TFE extends Game {
     private boolean GAME_ACTIVE = true;
     
     public TFE(PlayerData player, Function<Integer, Integer> onGameEnd) {
+    	super(ROWS, COLUMNS);
     	this.grid = new Grid(ROWS, COLUMNS);
     	this.player = player;
     	this.onGameEnd = onGameEnd;
     	
     	System.out.println("TFE Contructor " + player.getName() );
-    	
     }
-
-
+    
 	public GridPane createGame() {
     	
     	GridPane root = new GridPane();
     	root.setHgap(10);
         root.setVgap(10);
 
-    	GridPane board = new GridPane();
-        
-        System.out.println("creating scene ");
-        
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLUMNS; j++) {
-            
-            	Text tileLabel = new Text();
-            	tileLabel.setFont(Font.font(40));  	
-            	TFETile new_tile = tfeTileFactory.createTile(j, i);
-            	
-            	IntegerProperty tileValue = new_tile.getValueProperty();
-            	
-            	tileValue.addListener((property, oldVal, newVal) -> {
-                	if (newVal.intValue() == 0) {
-                		tileLabel.setText("");
-                	}
-                	else {   
-                		tileLabel.setText(String.valueOf(newVal));
-                	}
-            	});
-            	
-            	board.add(new StackPane(new_tile, tileLabel), j, i);
-            	
-                grid.setTile(i, j, new_tile);
-            }
-        }
+    	GridPane board = createBoard(true);
         
         fillTwo();
         fillTwo();
@@ -89,11 +60,11 @@ public class TFE extends Game {
         Button right = new Button("Right");
         Button quit = new Button("Quit");
         
-        quit.setOnAction(e -> { quit(); });
         up.setOnAction(e -> { if (validMove(Move.UP)) handleMove(Move.UP); });
         down.setOnAction(e -> { if (validMove(Move.DOWN)) handleMove(Move.DOWN); });
         left.setOnAction(e -> { if (validMove(Move.LEFT)) handleMove(Move.LEFT); });
         right.setOnAction(e -> { if (validMove(Move.RIGHT)) handleMove(Move.RIGHT); });
+        quit.setOnAction(e -> { quit(); });
         
         ButtonBar options = new ButtonBar();
         options.getButtons().addAll(up, down, left, right);
@@ -111,6 +82,10 @@ public class TFE extends Game {
         
         return root;
     }
+	
+    protected TFETile createTile(int row, int col) {
+    	return tfeTileFactory.createTile(row, col);
+    }
     
     private void handleMove(Move dir) {
     	
@@ -122,6 +97,27 @@ public class TFE extends Game {
         	System.out.println("Game over");
         }
     }
+    
+//  TODO fill either 2 or 4
+    private void fillTwo() {
+  	ArrayList<Cell> emptyCells = new ArrayList<Cell>();
+      for (int i = 0; i < ROWS; i++){
+          for(int j = 0; j < COLUMNS; j++){
+              if (getTileValue(i, j) == 0){
+                  emptyCells.add(new Cell(i, j));
+              }
+          }
+      }
+      
+      if (emptyCells.size() == 0) {
+          boardFilled = true;
+      }
+
+      int index = tfeTileFactory.getRandomValue(0, emptyCells.size() - 1);
+      Cell tempCell = emptyCells.get(index);
+      
+      setTileValue(tempCell.getRow(), tempCell.getCol(), 2);
+  }  
     
     private boolean validMove(Move dir) {
         switch(dir){
@@ -178,7 +174,7 @@ public class TFE extends Game {
         return false;
     }
     
-    public void moveBlocks(Move dir) {
+    private void moveBlocks(Move dir) {
         switch(dir){
             case UP: { // UP
                 for(int j = 0; j < COLUMNS; j++){
@@ -302,51 +298,32 @@ public class TFE extends Game {
         grid.getTile(A.getRow(), A.getCol()).setValue(0);;
     }
 
-//    @Override
-    public void checkGameover() {
+    @Override
+    protected void checkGameover() {
         GAME_ACTIVE = !boardFilled && highestScore.getValue() < GOAL;
     }
     
-    void onGameOver() {
-    	this.player.setHighScore(0, highestScore.getValue());
-    }
+//    private void onGameOver() {
+//    	this.player.setHighScore(0, highestScore.getValue());
+//    }
     
-    int getTileValue(int row, int col) {
+    private int getTileValue(int row, int col) {
     	return grid.getTile(row, col).getValue();
 	}
     
-    public void setTileValue(int row, int col, int value) {
+    private void setTileValue(int row, int col, int value) {
         updateTileValue(grid.getTile(row, col), value);
     }
     
     private void updateTileValue(Tile tile, int value) {
-   	 tile.setValue(value);
-   }
+    	tile.setValue(value);
+    }
     
-    public void quit() { 
+    @Override
+    protected void quit() { 
     	player.setHighScore(0, score.getValue());
         player.setInGame(false);
         onGameEnd.apply(1);
     }
-
-//    TODO fill either 2 or 4
-    public void fillTwo() {
-    	ArrayList<Cell> emptyCells = new ArrayList<Cell>();
-        for (int i = 0; i < ROWS; i++){
-            for(int j = 0; j < COLUMNS; j++){
-                if (getTileValue(i, j) == 0){
-                    emptyCells.add(new Cell(i, j));
-                }
-            }
-        }
-        
-        if (emptyCells.size() == 0) {
-            boardFilled = true;
-        }
-
-        int index = tfeTileFactory.getRandomValue(0, emptyCells.size() - 1);
-        Cell tempCell = emptyCells.get(index);
-        
-        setTileValue(tempCell.getRow(), tempCell.getCol(), 2);
-    }    
+  
 }

@@ -3,20 +3,18 @@ package tmge;
 import javafx.scene.paint.Color;
 
 public class BejeweledTileFactory extends TileFactory {
+	private static int BEJEWELED_TILE_SIZE = 50;
+	
+	protected static Color[] colors = new Color[] {
+			Color.RED, Color.ORANGE, Color.YELLOWGREEN, Color.BLUE, Color.GREEN, Color.PURPLE, Color.SILVER, Color.LIGHTSKYBLUE 
+	};
+	
 	private static BejeweledTileFactory bejeweledTileFactory = new BejeweledTileFactory();
 	
-	public static int BEJEWELED_TILE_SIZE = 50;
-	
-	static Color[] colors = new Color[] {
-            Color.RED, Color.ORANGE, Color.YELLOW, Color.BLUE, Color.GREEN, Color.PURPLE, Color.SILVER, Color.CORAL 
-    };
-	
-//	private BejeweledTileFactory() {}
 	
 	public static BejeweledTileFactory getInstance() {
 		return bejeweledTileFactory;
 	}
-	
 
 	@Override
 	public BejeweledTile createTile(int row, int col) {

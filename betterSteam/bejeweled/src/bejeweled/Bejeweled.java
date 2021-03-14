@@ -21,12 +21,14 @@ import javafx.scene.text.Text;
 
 
 public class Bejeweled extends Game {
-    final static int ROWS = 7;
-    final static int COLUMNS = 7;
+    private final static int ROWS = 7;
+    private final static int COLUMNS = 7;
+    
+    private boolean GAME_ACTIVE = true;
     
 	private ArrayList<Cell> updateList = new ArrayList<Cell>(); // List of locations to delete
     private BejeweledTileFactory bejeweledTileFactory = BejeweledTileFactory.getInstance();
-    private Tile selected = null;
+    private BejeweledTile selected = null;
     
     private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
     private IntegerProperty level = new SimpleIntegerProperty(1);
@@ -34,43 +36,18 @@ public class Bejeweled extends Game {
  
     
     public Bejeweled(PlayerData player, Function<Integer, Integer> onGameEnd) {
+    	super(ROWS, COLUMNS);
     	this.grid = new Grid(ROWS, COLUMNS);
     	this.player = player;
     	this.onGameEnd = onGameEnd;
     	System.out.println("Bejeweled Contructor for " + player.getName() );
     }
+   
     
     public GridPane createGame() {
     	GridPane root = new GridPane();
-    	GridPane board = new GridPane();
-        
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLUMNS; j++) {
-            	BejeweledTile new_tile = bejeweledTileFactory.createTile(j, i);
-            	new_tile.setOnMouseClicked(event -> {
-            		
-//            		System.out.println("\ntile clicked " + new_tile);
-                    if (selected == null) {
-                        selected = new_tile;
-                        //selected.setSeleted();
-                        
-                    }
-                    else {
-
-                        swap(new_tile, selected);
-                        selected = null;
-                    }
-                    removeAllMatches(true);
-                    if (checkGameover()) {
-                    	quit();
-                    }
-                });
-            	
-                grid.setTile(i, j, new_tile);
-                board.add(new_tile, j, i);
-            }
-        }
-        
+    	GridPane board = createBoard(false);
+                
         board.setHgap(5);
         board.setVgap(5);
         
@@ -104,14 +81,41 @@ public class Bejeweled extends Game {
         return root;
     }
     
-    private void swap(Tile a, Tile b) {
-//    	System.out.println("SWAP" +  a + " -> " + b);
+    protected BejeweledTile createTile(int row, int col) {
+    	BejeweledTile new_tile = bejeweledTileFactory.createTile(row, col);
     	
-        swapColors(a,b);
-        matchCheck(a,b);
+    	new_tile.setOnMouseClicked(event -> {
+    		handleTileClick(new_tile);
+        });
+    	
+    	return new_tile;
     }
     
-    private void swapColors(Tile a, Tile b) {
+    
+    private void handleTileClick(BejeweledTile tile) {
+        if (selected == null) {
+            selected = tile;
+            selected.setSeleted();
+            
+        } else {
+        		
+    		swap(tile, selected);
+    		matchCheck(tile, selected);
+            
+            selected.removeSelected();
+            selected = null;
+        }
+        
+        removeAllMatches(true);
+        checkGameover();
+        
+        if (GAME_ACTIVE) {
+        	quit();
+        }
+    }
+   
+    
+    private void swap(Tile a, Tile b) {
     	if (validMove(a,b)) {
     		movesLeft.setValue(movesLeft.getValue()-1);
     		
@@ -120,8 +124,7 @@ public class Bejeweled extends Game {
     		b.setValue(val);
     	} 
     }
-
-//    TODO needs to make sure tiles to swap are neighbors
+    
     private boolean validMove(Tile a, Tile b) {        
         if (a.getRow() == b.getRow()) {
         	return (b.getColumn() == a.getColumn()-1 || b.getColumn() == a.getColumn()+1);
@@ -134,78 +137,113 @@ public class Bejeweled extends Game {
 
 
 //    @Override
-    public void matchCheck(Tile a, Tile b) {
+    private void matchCheck(Tile a, Tile b) {
         // HORIZONTAL SEARCH
         for (int i = 0; i < ROWS; i++) {
-            horizontalMatch(i);
+//            horizontalMatch(i);
+        	findMatch(i, false);
         }
         for (int i = 0; i < COLUMNS; i++) {
-            verticalMatch(i);
+//            verticalMatch(i);
+        	findMatch(i, true);
         }
         if (updateList.size() == 0) {
-            swapColors(a,b);
+            swap(a,b);
         } else {
         	
         }
     }
     
-    private void horizontalMatch(int row) {
+    private void findMatch(int position, boolean vertical) {
         ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
         int current = -1;
 
         for (int i = 0; i < ROWS; i++) {
-        	int tileValue = grid.getTile(row, i).getValue();
         	
+        	int tileValue = vertical ? 
+        			grid.getTile(i, position).getValue() : grid.getTile(position, i).getValue();
+        	
+        			
             if (tileValue != current) {
                 if (tempToDelete.size() >= 3) {
                     updateList.addAll(tempToDelete);
                 }
                 tempToDelete.clear();
-                tempToDelete.add(new Cell(row, i));
+                tempToDelete.add(vertical ? new Cell(i, position) : new Cell(position, i));
+                
                 current = tileValue;
 
             } else {
-                tempToDelete.add(new Cell(row, i));
+                tempToDelete.add(vertical ? new Cell(i, position) : new Cell(position, i));
                 if (i == ROWS - 1 && tempToDelete.size() >= 3) {
                     updateList.addAll(tempToDelete);
                 }
             }
         }
     }
-
-    private void verticalMatch(int col) {
-        ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
-        int current = -1;
-
-        for (int i = 0; i < COLUMNS; i++) {
-        	int tileValue = grid.getTile(i, col).getValue();
-        	
-            if (tileValue != current) {
-                if (tempToDelete.size() >= 3) {
-                    updateList.addAll(tempToDelete);
-                }
-                tempToDelete.clear();
-                tempToDelete.add(new Cell(i, col));
-
-                current = tileValue;
-
-            } else {
-                tempToDelete.add(new Cell(i, col));
-                if (i == COLUMNS - 1 && tempToDelete.size() >= 3) {
-                    updateList.addAll(tempToDelete);
-                }
-            }
-        }
-    }
+    
+    
+//    private void horizontalMatch(int row) {
+//        ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
+//        int current = -1;
+//
+//        for (int i = 0; i < ROWS; i++) {
+//        	int tileValue = grid.getTile(row, i).getValue();
+//        	
+//            if (tileValue != current) {
+//                if (tempToDelete.size() >= 3) {
+//                    updateList.addAll(tempToDelete);
+//                }
+//                tempToDelete.clear();
+//                tempToDelete.add(new Cell(row, i));
+//                
+//                current = tileValue;
+//
+//            } else {
+//                tempToDelete.add(new Cell(row, i));
+//                if (i == ROWS - 1 && tempToDelete.size() >= 3) {
+//                    updateList.addAll(tempToDelete);
+//                }
+//            }
+//        }
+//    }
+//
+//    private void verticalMatch(int col) {
+//        ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
+//        int current = -1;
+//
+//        for (int i = 0; i < COLUMNS; i++) {
+//        	int tileValue = grid.getTile(i, col).getValue();
+//        	
+//            if (tileValue != current) {
+//                if (tempToDelete.size() >= 3) {
+//                    updateList.addAll(tempToDelete);
+//                }
+//                tempToDelete.clear();
+//                tempToDelete.add(new Cell(i, col));
+//
+//                current = tileValue;
+//
+//            } else {
+//                tempToDelete.add(new Cell(i, col));
+//                if (i == COLUMNS - 1 && tempToDelete.size() >= 3) {
+//                    updateList.addAll(tempToDelete);
+//                }
+//            }
+//        }
+//    }
+    
 
     private void removeAllMatches(boolean FLAG) {
         boolean CHECKING = true;
         while (CHECKING) {
             for (int i = 0; i < ROWS; i++) {
-                horizontalMatch(i);
+//                horizontalMatch(i);
+            	findMatch(i, false);
             }
             for (int i = 0; i < COLUMNS; i++) {
-                verticalMatch(i);
+//                verticalMatch(i);
+            	findMatch(i, true);
             }
 
             if (updateList.size() == 0) {
@@ -250,7 +288,7 @@ public class Bejeweled extends Game {
    
 
 //    @Override
-    public void save() {
+    private void save() {
     	score.setValue(score.getValue() + (10 * updateList.size()));
         if (score.getValue() >= goal.getValue()) {
         	goal.setValue(goal.getValue() + 250);
@@ -261,8 +299,8 @@ public class Bejeweled extends Game {
         }
     }
 
-//    @Override
-    public void quit() {
+    @Override
+    protected void quit() {
 //        return score.getValue();
         player.setHighScore(1, score.getValue());
         System.out.println(player.getHighScore());
@@ -271,9 +309,9 @@ public class Bejeweled extends Game {
     }
     
     
-//  @Override
-    public boolean checkGameover() {
+  @Override
+  protected void checkGameover() {
 //    	TODO check for possible moves
-    	return (movesLeft.getValue() <= 0);
+	  	GAME_ACTIVE = (movesLeft.getValue() <= 0);
     }
 }

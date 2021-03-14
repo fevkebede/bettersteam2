@@ -8,7 +8,7 @@ public class Grid {
         
     }    
     
-    public void setTile(int row, int col, Tile tile) {
+    protected void setTile(int row, int col, Tile tile) {
         grid[row][col] = tile;
     }
     
