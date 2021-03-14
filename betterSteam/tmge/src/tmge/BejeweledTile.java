@@ -13,14 +13,12 @@ public class BejeweledTile extends Tile {
     private int colorId; // used for comparisons since Color is an object
     private boolean flagged = false;
 
-    public BejeweledTile(int row, int col, Color color, int colorId, int size) {
+    BejeweledTile(int row, int col, Color color, int colorId, int size) {
     	super(size);
     	
     	this.row = row;
     	this.col = col;
     	this.colorId = colorId;
-    	
-//    	this.size = size;
     	
     	setArcWidth(50);
     	setArcHeight(50);
@@ -41,11 +39,9 @@ public class BejeweledTile extends Tile {
     }
     
     public void setSeleted() {
-    	System.out.println("setSelected " + this);
     	setStroke(Color.BLACK);
     	setStrokeWidth(5);
     	setStrokeType(StrokeType.INSIDE);
-    	System.out.println("setSelected done");
     }
     
     public void removeSelected() {
@@ -66,4 +62,6 @@ public class BejeweledTile extends Tile {
     	if (flagged) return "(null)";
     	return String.format("(%d,%d) ", getRow(), getColumn());
     }
+
+
 }
