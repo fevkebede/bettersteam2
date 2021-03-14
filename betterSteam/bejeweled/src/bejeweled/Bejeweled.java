@@ -5,9 +5,8 @@ import tmge.Game;
 import tmge.Grid;
 import tmge.PlayerData;
 import tmge.Tile;
-//import tmge.Tile;
+import tmge.BejeweledTile;
 import tmge.BejeweledTileFactory;
-import tmge.TileFactory;
 
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -20,12 +19,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 
+
 public class Bejeweled extends Game {
     final static int ROWS = 7;
     final static int COLUMNS = 7;
     
 	private ArrayList<Cell> updateList = new ArrayList<Cell>(); // List of locations to delete
-    private static TileFactory tileFactory = BejeweledTileFactory.getInstance();
+    private BejeweledTileFactory bejeweledTileFactory = BejeweledTileFactory.getInstance();
     private Tile selected = null;
     
     private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
@@ -46,7 +46,7 @@ public class Bejeweled extends Game {
         
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-            	Tile new_tile = tileFactory.createTile(j, i);
+            	BejeweledTile new_tile = bejeweledTileFactory.createTile(j, i);
             	new_tile.setOnMouseClicked(event -> {
             		
 //            		System.out.println("\ntile clicked " + new_tile);
@@ -249,7 +249,7 @@ public class Bejeweled extends Game {
         }      
     	
         while (tempColumn.size() < COLUMNS)  {
-            tempColumn.add(0, tileFactory.getRandomColorId());
+            tempColumn.add(0, bejeweledTileFactory.getRandomColorId());
         }
 
         for (int i = 0; i < ROWS; i++) {
