@@ -5,8 +5,8 @@ import tmge.Game;
 import tmge.Grid;
 import tmge.Cell;
 import tmge.TFETile;
+import tmge.TFETileFactory;
 import tmge.Tile;
-import tmge.TileFactory;
 import tmge.PlayerData;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class TFE extends Game {
 	private final static int ROWS = 4;
     private final int COLUMNS = 4;
     
-    private TileFactory tileFactory = new TileFactory();
+    private TFETileFactory tfeTileFactory = TFETileFactory.getInstance();
     private IntegerProperty highestScore = new SimpleIntegerProperty(2);
     private boolean boardFilled = false;
 
@@ -56,14 +56,22 @@ public class TFE extends Game {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
             
-            	Text text = new Text();
-            	text.setFont(Font.font(40));
+            	Text tileLabel = new Text();
+            	tileLabel.setFont(Font.font(40));  	
+            	TFETile new_tile = tfeTileFactory.createTile(j, i);
             	
-            	TFETile new_tile = tileFactory.createTFETile(j, i, text);
+            	IntegerProperty tileValue = new_tile.getValueProperty();
             	
-//            	StackPane layers text over tile
-            	board.add(new StackPane(new_tile, text), j, i);
-//            	board.add(new_tile, j, i);
+            	tileValue.addListener((property, oldVal, newVal) -> {
+                	if (newVal.intValue() == 0) {
+                		tileLabel.setText("");
+                	}
+                	else {   
+                		tileLabel.setText(String.valueOf(newVal));
+                	}
+            	});
+            	
+            	board.add(new StackPane(new_tile, tileLabel), j, i);
             	
                 grid.setTile(i, j, new_tile);
             }
@@ -125,9 +133,6 @@ public class TFE extends Game {
                         		(getTileValue(i - 1, j) == currCell)){
                         	return true;
                         }
-//                        if(getTileValue(i - 1, j) == 0){
-//                            return true;
-//                        }
                     }
                 }
                 break;
@@ -140,9 +145,6 @@ public class TFE extends Game {
                         		(getTileValue(i + 1, j) == currCell)){
                         	return true;
                         }
-//                        if(getTileValue(i + 1, j) == 0){
-//                            return true;
-//                        }
                     }
                 }
                 break;
@@ -155,9 +157,6 @@ public class TFE extends Game {
                         		(getTileValue(i, j-1) == currCell)){
                             return true;
                         }
-//                        if(getTileValue(i, j -1) == 0){
-//                            return true;
-//                        }
                     }
                 }
                 break;
@@ -170,17 +169,10 @@ public class TFE extends Game {
                         		(getTileValue(i, j+1) == currCell)){
                         	return true;
                         }
-//                        if(getTileValue(i, j + 1) == 0){
-//                            return true;
-//                        }
                     }
                 }
                 break;
             }
-//            case 5: {
-//                GAME_ACTIVE = false;
-//                return true;
-//            }
         }
         System.out.print("Invalid direction!\n");
         return false;
@@ -331,30 +323,14 @@ public class TFE extends Game {
    	 tile.setValue(value);
    }
     
-    
-//    @Override
-//    public void matchCheck() {
-//
-//    }
-//
-//    @Override
-//    public void save() {
-//
-//    }
-//
-//    @Override
     public void quit() { 
     	player.setHighScore(0, score.getValue());
-//        System.out.println(player.getHighScore());
         player.setInGame(false);
         onGameEnd.apply(1);
     }
 
 //    TODO fill either 2 or 4
     public void fillTwo() {
-        // Set two cells to value 2 to get beginning board
-        // 90% fill 2, 10% fill 4
-        
     	ArrayList<Cell> emptyCells = new ArrayList<Cell>();
         for (int i = 0; i < ROWS; i++){
             for(int j = 0; j < COLUMNS; j++){
@@ -368,16 +344,9 @@ public class TFE extends Game {
             boardFilled = true;
         }
 
-        int index = tileFactory.getRandomValue(0, emptyCells.size() - 1);
+        int index = tfeTileFactory.getRandomValue(0, emptyCells.size() - 1);
         Cell tempCell = emptyCells.get(index);
         
         setTileValue(tempCell.getRow(), tempCell.getCol(), 2);
-    }
-    
-//    
-//    public static void main(String[] args) {
-//    	System.out.println("2048 started");
-////        launch(args);
-//    }
-    
+    }    
 }

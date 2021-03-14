@@ -1,21 +1,17 @@
 package tmge;
 
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 
 public class TFETile extends Tile {
-//    private int size;
 	private IntegerProperty value = new SimpleIntegerProperty();
-	private Text label;
 
-    TFETile(int row, int col, int size, Text label) {
+    TFETile(int row, int col, int size) {
     	super(size);
     	this.row = row;
     	this.col = col;
-    	this.label = label;
     	
     	setFill(Color.GREY);
     	setStroke(Color.BLACK);
@@ -32,13 +28,6 @@ public class TFETile extends Tile {
 
     public void setValue(int val) {
     	this.value.setValue(val);
-    	if (val == 0) {
-//    		String label = tile.getValue() == 0 ? "" : String.valueOf(tile.getValue());
-    		label.setText("");
-    	}
-    	else {   
-    		label.setText(String.valueOf(value.getValue()));
-    	}
     }
 
     @Override

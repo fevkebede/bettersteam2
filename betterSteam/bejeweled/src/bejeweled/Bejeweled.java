@@ -4,8 +4,9 @@ import tmge.Cell;
 import tmge.Game;
 import tmge.Grid;
 import tmge.PlayerData;
+import tmge.Tile;
 import tmge.BejeweledTile;
-import tmge.TileFactory;
+import tmge.BejeweledTileFactory;
 
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -18,13 +19,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 
+
 public class Bejeweled extends Game {
     final static int ROWS = 7;
     final static int COLUMNS = 7;
     
 	private ArrayList<Cell> updateList = new ArrayList<Cell>(); // List of locations to delete
-    private TileFactory tileFactory = new TileFactory();
-    private BejeweledTile selected = null;
+    private BejeweledTileFactory bejeweledTileFactory = BejeweledTileFactory.getInstance();
+    private Tile selected = null;
     
     private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
     private IntegerProperty level = new SimpleIntegerProperty(1);
@@ -44,20 +46,18 @@ public class Bejeweled extends Game {
         
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-            	BejeweledTile new_tile = tileFactory.createBejeweledTile(j, i);
+            	BejeweledTile new_tile = bejeweledTileFactory.createTile(j, i);
             	new_tile.setOnMouseClicked(event -> {
             		
 //            		System.out.println("\ntile clicked " + new_tile);
                     if (selected == null) {
                         selected = new_tile;
-                        selected.setSeleted();
+                        //selected.setSeleted();
                         
                     }
                     else {
 
                         swap(new_tile, selected);
-                        
-                        selected.removeSelected();
                         selected = null;
                     }
                     removeAllMatches(true);
@@ -71,7 +71,6 @@ public class Bejeweled extends Game {
             }
         }
         
-//        spacing between grid row/col
         board.setHgap(5);
         board.setVgap(5);
         
@@ -105,31 +104,25 @@ public class Bejeweled extends Game {
         return root;
     }
     
-    private void swap(BejeweledTile a, BejeweledTile b) {
+    private void swap(Tile a, Tile b) {
 //    	System.out.println("SWAP" +  a + " -> " + b);
     	
         swapColors(a,b);
         matchCheck(a,b);
     }
     
-    private void swapColors(BejeweledTile a, BejeweledTile b) {
+    private void swapColors(Tile a, Tile b) {
     	if (validMove(a,b)) {
     		movesLeft.setValue(movesLeft.getValue()-1);
     		
     		int val = a.getValue();
     		a.setValue(b.getValue());
     		b.setValue(val);
-    		
-//    		Paint a_color = a.getColor();
-//            int a_colorId = a.getColorId();
-//            
-//            a.setColor(b.getColor(), b.getColorId());
-//            b.setColor(a_color, a_colorId);
     	} 
     }
 
 //    TODO needs to make sure tiles to swap are neighbors
-    private boolean validMove(BejeweledTile a, BejeweledTile b) {        
+    private boolean validMove(Tile a, Tile b) {        
         if (a.getRow() == b.getRow()) {
         	return (b.getColumn() == a.getColumn()-1 || b.getColumn() == a.getColumn()+1);
         }
@@ -141,7 +134,7 @@ public class Bejeweled extends Game {
 
 
 //    @Override
-    public void matchCheck(BejeweledTile a, BejeweledTile b) {
+    public void matchCheck(Tile a, Tile b) {
         // HORIZONTAL SEARCH
         for (int i = 0; i < ROWS; i++) {
             horizontalMatch(i);
@@ -247,7 +240,7 @@ public class Bejeweled extends Game {
         }      
     	
         while (tempColumn.size() < COLUMNS)  {
-            tempColumn.add(0, tileFactory.getRandomColorId());
+            tempColumn.add(0, bejeweledTileFactory.getRandomColorId());
         }
 
         for (int i = 0; i < ROWS; i++) {
@@ -283,26 +276,4 @@ public class Bejeweled extends Game {
 //    	TODO check for possible moves
     	return (movesLeft.getValue() <= 0);
     }
-    
-//    private void printTiles() {
-//        System.out.println("\nTiles");
-//        for (int i = 0; i < grid.getGrid().length; i++) {
-//            for (int j = 0; j < grid.getGrid()[i].length; j++) {
-//                System.out.print(" " + grid.getGrid()[i][j] + " | ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println();
-//    }
-//   
-//    private void printBoard() {
-//        System.out.println("\nBOARD");
-//        for (int i = 0; i < grid.getGrid().length; i++) {
-//            for (int j = 0; j < grid.getGrid()[i].length; j++) {
-//            	System.out.print(" " + grid.getGrid()[i][j].getValue() + " | ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println();
-//    }
 }
