@@ -7,6 +7,7 @@ import bejeweled.Bejeweled;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -25,7 +26,7 @@ public class GameManager  extends Application {
 	Button playTFE = new Button("2048");
 	Button playBejeweled = new Button("Bejeweled");
 	Button viewHighScores = new Button("View Scores");
-	Button switchPlayer = new Button("Switch Player");
+	Button logout = new Button("Logout");
 	
 	public GameManager() {
 		System.out.println("GameManager Constructor");
@@ -55,6 +56,7 @@ public class GameManager  extends Application {
     	input.setPromptText("Name");
 
     	Button submit = new Button("Submit");
+    	Button highScores = new Button("High Scores");
     	
     	submit.setOnAction(e -> {
     		
@@ -74,10 +76,16 @@ public class GameManager  extends Application {
     		clearScreen();
     		showMenu();
     	});
+    	
+    	highScores.setOnAction(e -> {
+    		clearScreen();
+    		showAllHighScores();
+    	});
     	    	
     	window.add(label, 0, 0);
     	window.add(input, 0	, 1);
     	window.add(submit, 1, 1);
+    	window.add(highScores, 0, 2);
     	
     }
     
@@ -101,14 +109,17 @@ public class GameManager  extends Application {
     }
     
     private void showAllHighScores() {    	
-    	String bejeweledText = "Bejeweled\n--------------------\n";
-    	String tfeText = "2048\n--------------------\n";
+    	String bejeweledText = "Bejeweled High Scores\n-------------------------\n";
+    	String tfeText = "2048 High Scores\n-------------------------\n";
     	
-    	Iterator playersIt = players.entrySet().iterator(); 
-    	
-    	
-    	// Iterate through hashmap
-    	
+    	for (Map.Entry mapElement : players.entrySet()) { 
+            String key = (String)mapElement.getKey(); 
+            PlayerData value = ((PlayerData)mapElement.getValue()); 
+  
+            tfeText += key + ":\t\t" + String.valueOf(value.retrieveData().getTfeHighScore()) + "\n"; 
+            bejeweledText += key + ":\t\t" + String.valueOf(value.retrieveData().getBejeweledHighScore()) + "\n"; 
+        } 
+        
     	Text bejeweledScore = new Text();
     	bejeweledScore.setText(bejeweledText);
     	
@@ -119,7 +130,7 @@ public class GameManager  extends Application {
     	
     	close.setOnAction(e -> {
     		clearScreen();
-    		showMenu();
+    		showLoginScreen();
     	});
     	
     	window.add(tfeScore, 0, 1);
@@ -137,7 +148,7 @@ public class GameManager  extends Application {
     	window.add(playBejeweled, 0, 0);
     	window.add(playTFE, 1, 0);
     	window.add(viewHighScores, 0, 1);
-    	window.add(switchPlayer, 1, 1);
+    	window.add(logout, 1, 1);
     	
     }
     
@@ -184,9 +195,10 @@ public class GameManager  extends Application {
     		showHighScores();
     	});
     	
-    	switchPlayer.setOnAction(e -> {
-//    		clearScreen();
-    		changePlayer();
+    	logout.setOnAction(e -> {
+    		currentPlayer = null;
+    		clearScreen();
+    		showLoginScreen();
     	});
     	
     	
