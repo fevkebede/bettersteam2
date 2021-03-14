@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Function;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -194,6 +195,11 @@ public class GameManager  extends Application {
     	
     }
     
+    public void onEndGame() {
+    	clearScreen();
+    	showMenu();
+    }
+    
     private void clearScreen() {
     	window.getChildren().clear();
     }
@@ -201,12 +207,17 @@ public class GameManager  extends Application {
     private void startGame(GameType type) {
     	clearScreen();
     	
+    	Function<Integer, Integer> endGame = (e) -> {
+            onEndGame();
+            return e;
+        };
+    
     	switch(type) {
     		case TFE:
     			System.out.println("run tge");
-    			TFE tfe = new TFE(currentPlayer);
+    			TFE tfe = new TFE(currentPlayer, endGame);
     			GridPane tfe_board = tfe.createGame();
-    			tfe.addKeyPressListeners(tfe_board);
+//    			tfe.addKeyPressListeners(tfe_board);
     			
     			window.add(tfe_board, 0, 2);
     			break;
@@ -214,7 +225,7 @@ public class GameManager  extends Application {
     		case BEJEWELED:
     			System.out.println("run bejeweled");
     			
-    			Bejeweled bejeweled = new Bejeweled(currentPlayer);
+    			Bejeweled bejeweled = new Bejeweled(currentPlayer, endGame);
     	    	GridPane bejeweled_board = bejeweled.createGame();
     	    	
     	    	window.add(bejeweled_board, 0, 2);

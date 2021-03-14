@@ -23,8 +23,20 @@ public class PlayerData {
 		return inGame;
 	}
 
-	public void setHighScore(int highScore) {
-		this.highScore = highScore;
+	public void setHighScore(int GAME_FLAG, int highScore) {
+		
+		switch (GAME_FLAG) {
+			case 0: {
+				if (playerData.getTfeHighScore() < highScore) {
+					playerData.setTfeHighScore(highScore);
+				}
+			}
+			case 1: {
+				if (playerData.getBejeweledHighScore() < highScore) {
+					playerData.setBejeweledHighScore(highScore);
+				}
+			}
+		}
 	}
 	
 	public void setInGame(boolean inGame) {

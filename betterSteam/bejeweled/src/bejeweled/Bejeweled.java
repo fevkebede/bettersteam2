@@ -8,9 +8,11 @@ import tmge.BejeweledTile;
 import tmge.TileFactory;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -33,11 +35,13 @@ public class Bejeweled {
     private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
     private IntegerProperty level = new SimpleIntegerProperty(1);
     private IntegerProperty goal = new SimpleIntegerProperty(500);
+    
+    Function<Integer, Integer> function;
  
     
-    public Bejeweled(PlayerData player) {
+    public Bejeweled(PlayerData player, Function<Integer, Integer> function) {
     	this.player = player;
-    	
+    	this.function = function;
     	System.out.println("Bejeweled Contructor for " + player.getName() );
     }
     
@@ -87,6 +91,11 @@ public class Bejeweled {
         Text textMoves = new Text();
         Text textGoal  = new Text();
         Text textScore = new Text();
+        Button quit = new Button("Quit");
+        
+        quit.setOnAction(e -> {
+    		quit();
+    	});
 //        Text movesLeft, , goal
         
         
@@ -102,6 +111,7 @@ public class Bejeweled {
         textMoves.textProperty().bind(movesLeft.asString("Moves: %d"));
         textGoal.textProperty().bind(goal.asString("Goal: %d"));
         
+        
 
         root.add(title, 0, 0);
         root.add(board, 0, 1);
@@ -109,6 +119,7 @@ public class Bejeweled {
         root.add(textMoves, 0, 3);
         root.add(textGoal, 0, 4);
         root.add(textScore, 0, 5);
+        root.add(quit, 0, 6);
         return root;
     }
     
@@ -297,8 +308,10 @@ public class Bejeweled {
 //    @Override
     public void quit() {
 //        return score.getValue();
-        player.setHighScore(score.getValue());
+        player.setHighScore(1, score.getValue());
+        System.out.println(player.getHighScore());
         player.setInGame(false);
+        function.apply(1);
     }
     
     

@@ -323,7 +323,7 @@ public class TFE {
     }
     
     void onGameOver() {
-    	this.player.setHighScore(highestScore.getValue());
+    	this.player.setHighScore(0, highestScore.getValue());
     }
     
     int getTileValue(int row, int col) { return tileGrid[row][col].getValue(); }
