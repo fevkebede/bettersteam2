@@ -35,7 +35,7 @@ public class BejeweledTile extends Tile {
     public void setValue(int newColor) {
 //    	if (val == 0) val = null;
     	this.colorId = newColor;
-    	setFill(TileFactory.colors[newColor]);
+    	setFill(BejeweledTileFactory.colors[newColor]);
     }
     
     public void setSeleted() {

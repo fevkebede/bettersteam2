@@ -4,7 +4,9 @@ import tmge.Cell;
 import tmge.Game;
 import tmge.Grid;
 import tmge.PlayerData;
-import tmge.BejeweledTile;
+import tmge.Tile;
+//import tmge.Tile;
+import tmge.BejeweledTileFactory;
 import tmge.TileFactory;
 
 import java.util.ArrayList;
@@ -23,8 +25,8 @@ public class Bejeweled extends Game {
     final static int COLUMNS = 7;
     
 	private ArrayList<Cell> updateList = new ArrayList<Cell>(); // List of locations to delete
-    private TileFactory tileFactory = new TileFactory();
-    private BejeweledTile selected = null;
+    private static TileFactory tileFactory = BejeweledTileFactory.getInstance();
+    private Tile selected = null;
     
     private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
     private IntegerProperty level = new SimpleIntegerProperty(1);
@@ -44,20 +46,20 @@ public class Bejeweled extends Game {
         
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-            	BejeweledTile new_tile = tileFactory.createBejeweledTile(j, i);
+            	Tile new_tile = tileFactory.createTile(j, i);
             	new_tile.setOnMouseClicked(event -> {
             		
 //            		System.out.println("\ntile clicked " + new_tile);
                     if (selected == null) {
                         selected = new_tile;
-                        selected.setSeleted();
+                        //selected.setSeleted();
                         
                     }
                     else {
 
                         swap(new_tile, selected);
                         
-                        selected.removeSelected();
+                        //selected.removeSelected();
                         selected = null;
                     }
                     removeAllMatches(true);
@@ -105,14 +107,14 @@ public class Bejeweled extends Game {
         return root;
     }
     
-    private void swap(BejeweledTile a, BejeweledTile b) {
+    private void swap(Tile a, Tile b) {
 //    	System.out.println("SWAP" +  a + " -> " + b);
     	
         swapColors(a,b);
         matchCheck(a,b);
     }
     
-    private void swapColors(BejeweledTile a, BejeweledTile b) {
+    private void swapColors(Tile a, Tile b) {
     	if (validMove(a,b)) {
     		movesLeft.setValue(movesLeft.getValue()-1);
     		
@@ -129,7 +131,7 @@ public class Bejeweled extends Game {
     }
 
 //    TODO needs to make sure tiles to swap are neighbors
-    private boolean validMove(BejeweledTile a, BejeweledTile b) {        
+    private boolean validMove(Tile a, Tile b) {        
         if (a.getRow() == b.getRow()) {
         	return (b.getColumn() == a.getColumn()-1 || b.getColumn() == a.getColumn()+1);
         }
@@ -141,7 +143,7 @@ public class Bejeweled extends Game {
 
 
 //    @Override
-    public void matchCheck(BejeweledTile a, BejeweledTile b) {
+    public void matchCheck(Tile a, Tile b) {
         // HORIZONTAL SEARCH
         for (int i = 0; i < ROWS; i++) {
             horizontalMatch(i);
