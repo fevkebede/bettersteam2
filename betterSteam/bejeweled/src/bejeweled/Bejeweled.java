@@ -66,6 +66,9 @@ public class Bejeweled {
                         selected = null;
                     }
                     removeAllMatches(true);
+                    if (checkGameover()) {
+                    	quit();
+                    }
                 });
             	
                 grid.setCell(i, j, new_tile);
@@ -232,18 +235,8 @@ public class Bejeweled {
             int row = toDelete.get(i).getRow();
             int col = toDelete.get(i).getCol();
             grid.getGrid()[row][col].setFlag(true); // flag tile that should change color
-        }
-        
-        if (POINT_FLAG) {
-            score.setValue(score.getValue() + (10*toDelete.size()));
-            if (score.getValue() >= goal.getValue()) {
-            	goal.setValue(goal.getValue() + 250);
-            	level.setValue(level.getValue() + 1);
-            	
-            	score.setValue(0);
-            	movesLeft.setValue(30);
-            }
-        }
+        }      
+        if (POINT_FLAG) { save(); }
         toDelete.clear();
     }
 
@@ -291,18 +284,28 @@ public class Bejeweled {
 
 //    @Override
     public void save() {
-
+    	score.setValue(score.getValue() + (10*toDelete.size()));
+        if (score.getValue() >= goal.getValue()) {
+        	goal.setValue(goal.getValue() + 250);
+        	level.setValue(level.getValue() + 1);
+        	
+        	score.setValue(0);
+        	movesLeft.setValue(30);
+        }
     }
 
 //    @Override
-    public int quit() {
-        return score.getValue();
+    public void quit() {
+//        return score.getValue();
+        player.setHighScore(score.getValue());
+        player.setInGame(false);
     }
     
     
 //  @Override
-    public void checkGameover() {
+    public boolean checkGameover() {
 //    	TODO check for possible moves
+    	return (movesLeft.getValue() <= 0) && (score.getValue() < goal.getValue());
     }
     
 
