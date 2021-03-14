@@ -18,28 +18,23 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 
-public class Bejeweled extends Game{
-	
-	private PlayerData player;
-
-    ArrayList<Cell> toDelete = new ArrayList<Cell>(); // List of locations to delete
-    public static int MAX_ROWS = 7;
-    public static int MAX_COLS = 7;
+public class Bejeweled extends Game {
+    final static int ROWS = 7;
+    final static int COLUMNS = 7;
     
-    private Grid grid = new Grid(MAX_ROWS, MAX_COLS);
+	private ArrayList<Cell> updateList = new ArrayList<Cell>(); // List of locations to delete
     private TileFactory tileFactory = new TileFactory();
     private BejeweledTile selected = null;
     
     private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
     private IntegerProperty level = new SimpleIntegerProperty(1);
     private IntegerProperty goal = new SimpleIntegerProperty(500);
-    
-    Function<Integer, Integer> function;
  
     
-    public Bejeweled(PlayerData player, Function<Integer, Integer> function) {
+    public Bejeweled(PlayerData player, Function<Integer, Integer> onGameEnd) {
+    	this.grid = new Grid(ROWS, COLUMNS);
     	this.player = player;
-    	this.function = function;
+    	this.onGameEnd = onGameEnd;
     	System.out.println("Bejeweled Contructor for " + player.getName() );
     }
     
@@ -47,8 +42,8 @@ public class Bejeweled extends Game{
     	GridPane root = new GridPane();
     	GridPane board = new GridPane();
         
-        for (int i = 0; i < MAX_ROWS; i++) {
-            for (int j = 0; j < MAX_COLS; j++) {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLUMNS; j++) {
             	BejeweledTile new_tile = tileFactory.createBejeweledTile(j, i);
             	new_tile.setOnMouseClicked(event -> {
             		
@@ -71,7 +66,7 @@ public class Bejeweled extends Game{
                     }
                 });
             	
-                grid.setCell(i, j, new_tile);
+                grid.setTile(i, j, new_tile);
                 board.add(new_tile, j, i);
             }
         }
@@ -148,13 +143,13 @@ public class Bejeweled extends Game{
 //    @Override
     public void matchCheck(BejeweledTile a, BejeweledTile b) {
         // HORIZONTAL SEARCH
-        for (int i = 0; i < grid.getGrid().length; i++) {
+        for (int i = 0; i < ROWS; i++) {
             horizontalMatch(i);
         }
-        for (int i = 0; i < grid.getGrid()[0].length; i++) {
+        for (int i = 0; i < COLUMNS; i++) {
             verticalMatch(i);
         }
-        if (toDelete.size() == 0) {
+        if (updateList.size() == 0) {
             swapColors(a,b);
         } else {
         	
@@ -165,19 +160,21 @@ public class Bejeweled extends Game{
         ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
         int current = -1;
 
-        for (int i = 0; i < grid.getGrid()[row].length; i++) {
-            if (grid.getGrid()[row][i].getValue() != current) {
+        for (int i = 0; i < ROWS; i++) {
+        	int tileValue = grid.getTile(row, i).getValue();
+        	
+            if (tileValue != current) {
                 if (tempToDelete.size() >= 3) {
-                    toDelete.addAll(tempToDelete);
+                    updateList.addAll(tempToDelete);
                 }
                 tempToDelete.clear();
                 tempToDelete.add(new Cell(row, i));
-                current = grid.getGrid()[row][i].getValue();
+                current = tileValue;
 
             } else {
                 tempToDelete.add(new Cell(row, i));
-                if (i == grid.getGrid()[row].length-1 && tempToDelete.size() >= 3) {
-                    toDelete.addAll(tempToDelete);
+                if (i == ROWS - 1 && tempToDelete.size() >= 3) {
+                    updateList.addAll(tempToDelete);
                 }
             }
         }
@@ -187,20 +184,22 @@ public class Bejeweled extends Game{
         ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
         int current = -1;
 
-        for (int i = 0; i < grid.getGrid().length; i++) {
-            if (grid.getGrid()[i][col].getValue() != current) {
+        for (int i = 0; i < COLUMNS; i++) {
+        	int tileValue = grid.getTile(i, col).getValue();
+        	
+            if (tileValue != current) {
                 if (tempToDelete.size() >= 3) {
-                    toDelete.addAll(tempToDelete);
+                    updateList.addAll(tempToDelete);
                 }
                 tempToDelete.clear();
                 tempToDelete.add(new Cell(i, col));
 
-                current = grid.getGrid()[i][col].getValue();
+                current = tileValue;
 
             } else {
                 tempToDelete.add(new Cell(i, col));
-                if (i == grid.getGrid().length-1 && tempToDelete.size() >= 3) {
-                    toDelete.addAll(tempToDelete);
+                if (i == COLUMNS - 1 && tempToDelete.size() >= 3) {
+                    updateList.addAll(tempToDelete);
                 }
             }
         }
@@ -209,29 +208,29 @@ public class Bejeweled extends Game{
     private void removeAllMatches(boolean FLAG) {
         boolean CHECKING = true;
         while (CHECKING) {
-            for (int i = 0; i < grid.getGrid().length; i++) {
+            for (int i = 0; i < ROWS; i++) {
                 horizontalMatch(i);
             }
-            for (int i = 0; i < grid.getGrid()[0].length; i++) {
+            for (int i = 0; i < COLUMNS; i++) {
                 verticalMatch(i);
             }
 
-            if (toDelete.size() == 0) {
+            if (updateList.size() == 0) {
                 CHECKING = false;
                 
             } else {
-                for (int i = 0; i < grid.getGrid()[0].length; i++) {
+                for (int i = 0; i < COLUMNS; i++) {
                     gravityColumn(i); // SHIFT EACH COLUMN DOWN
                 }    
                 if (FLAG) { save(); }
-                toDelete.clear();
+                updateList.clear();
             }
         }
     }
     
     private boolean inToDelete(int row, int col) {
-    	for (int i = 0; i < toDelete.size(); i++) {
-    		if (toDelete.get(i).getRow() == row && toDelete.get(i).getCol() == col) {
+    	for (int i = 0; i < updateList.size(); i++) {
+    		if (updateList.get(i).getRow() == row && updateList.get(i).getCol() == col) {
     			return true;
     		}
     	}
@@ -241,46 +240,25 @@ public class Bejeweled extends Game{
     private void gravityColumn(int col) {
         ArrayList<Integer> tempColumn = new ArrayList<Integer>();
         
-        for (int i = 0; i < grid.getGrid().length; i++) {
+        for (int i = 0; i < ROWS; i++) {
         	if (!inToDelete(i, col)) {
-        		tempColumn.add(grid.getGrid()[i][col].getValue());
+        		tempColumn.add(grid.getTile(i, col).getValue());
         	}
         }      
     	
-        while (tempColumn.size() < MAX_COLS)  {
+        while (tempColumn.size() < COLUMNS)  {
             tempColumn.add(0, tileFactory.getRandomColorId());
         }
 
-        for (int i = 0; i < grid.getGrid().length; i++) {
-            grid.getGrid()[i][col].setValue(tempColumn.get(i));
+        for (int i = 0; i < ROWS; i++) {
+        	grid.getTile(i, col).setValue(tempColumn.get(i));
         }
-    }
-    
-    private void printTiles() {
-        System.out.println("\nTiles");
-        for (int i = 0; i < grid.getGrid().length; i++) {
-            for (int j = 0; j < grid.getGrid()[i].length; j++) {
-                System.out.print(" " + grid.getGrid()[i][j] + " | ");
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
    
-    private void printBoard() {
-        System.out.println("\nBOARD");
-        for (int i = 0; i < grid.getGrid().length; i++) {
-            for (int j = 0; j < grid.getGrid()[i].length; j++) {
-            	System.out.print(" " + grid.getGrid()[i][j].getValue() + " | ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
 
 //    @Override
     public void save() {
-    	score.setValue(score.getValue() + (10*toDelete.size()));
+    	score.setValue(score.getValue() + (10 * updateList.size()));
         if (score.getValue() >= goal.getValue()) {
         	goal.setValue(goal.getValue() + 250);
         	level.setValue(level.getValue() + 1);
@@ -296,7 +274,7 @@ public class Bejeweled extends Game{
         player.setHighScore(1, score.getValue());
         System.out.println(player.getHighScore());
         player.setInGame(false);
-        function.apply(1);
+        onGameEnd.apply(1);
     }
     
     
@@ -306,15 +284,25 @@ public class Bejeweled extends Game{
     	return (movesLeft.getValue() <= 0);
     }
     
-
-//    @Override
-//    public void start(Stage primaryStage) throws Exception {
-//        primaryStage.setScene(new Scene(createContent(), MAX_ROWS * TILE_SIZE + 200, MAX_COLS * TILE_SIZE + 200));
-//        primaryStage.setTitle("Bejeweled");
-//        primaryStage.show();
+//    private void printTiles() {
+//        System.out.println("\nTiles");
+//        for (int i = 0; i < grid.getGrid().length; i++) {
+//            for (int j = 0; j < grid.getGrid()[i].length; j++) {
+//                System.out.print(" " + grid.getGrid()[i][j] + " | ");
+//            }
+//            System.out.println();
+//        }
+//        System.out.println();
 //    }
-//    
-//    public static void main(String[] args) {
-//        launch(args);
+//   
+//    private void printBoard() {
+//        System.out.println("\nBOARD");
+//        for (int i = 0; i < grid.getGrid().length; i++) {
+//            for (int j = 0; j < grid.getGrid()[i].length; j++) {
+//            	System.out.print(" " + grid.getGrid()[i][j].getValue() + " | ");
+//            }
+//            System.out.println();
+//        }
+//        System.out.println();
 //    }
 }

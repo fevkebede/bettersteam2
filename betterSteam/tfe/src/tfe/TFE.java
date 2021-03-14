@@ -2,6 +2,7 @@ package tfe;
 
 
 import tmge.Game;
+import tmge.Grid;
 import tmge.Cell;
 import tmge.TFETile;
 import tmge.Tile;
@@ -22,27 +23,21 @@ import javafx.scene.text.Text;
 
 
 public class TFE extends Game {
-	
-//	TODO use grid 
-	private TFETile[][] tileGrid = new TFETile[MAX_ROWS][MAX_COLS];
-	private PlayerData player;
-	Function<Integer, Integer> function;
-	
-	
-    ArrayList<Cell> toDelete = new ArrayList<Cell>();
+	private final static int ROWS = 4;
+    private final int COLUMNS = 4;
+    
     private TileFactory tileFactory = new TileFactory();
     private IntegerProperty highestScore = new SimpleIntegerProperty(2);
     private boolean boardFilled = false;
-    
-    public static int MAX_ROWS = 4;
-    public static int MAX_COLS = 4;
 
-    private int goal = 2048;
+    private final int GOAL = 2048;
     private boolean GAME_ACTIVE = true;
     
-    public TFE(PlayerData player, Function<Integer, Integer> function) {
-    	this.function = function;
+    public TFE(PlayerData player, Function<Integer, Integer> onGameEnd) {
+    	this.grid = new Grid(ROWS, COLUMNS);
     	this.player = player;
+    	this.onGameEnd = onGameEnd;
+    	
     	System.out.println("TFE Contructor " + player.getName() );
     	
     }
@@ -58,8 +53,8 @@ public class TFE extends Game {
         
         System.out.println("creating scene ");
         
-        for (int i = 0; i < MAX_ROWS; i++) {
-            for (int j = 0; j < MAX_COLS; j++) {
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLUMNS; j++) {
             
             	Text text = new Text();
             	text.setFont(Font.font(40));
@@ -68,8 +63,9 @@ public class TFE extends Game {
             	
 //            	StackPane layers text over tile
             	board.add(new StackPane(new_tile, text), j, i);
+//            	board.add(new_tile, j, i);
             	
-                setInitialCell(i, j, new_tile);
+                grid.setTile(i, j, new_tile);
             }
         }
         
@@ -122,8 +118,8 @@ public class TFE extends Game {
     private boolean validMove(Move dir) {
         switch(dir){
             case UP: { // UP
-                for(int i = 1; i < MAX_ROWS; i++){
-                    for(int j = 0; j < MAX_COLS; j++){
+                for(int i = 1; i < ROWS; i++){
+                    for(int j = 0; j < COLUMNS; j++){
                         int currCell = getTileValue(i, j);
                         if((getTileValue(i - 1, j) == 0 && currCell != 0) ||
                         		(getTileValue(i - 1, j) == currCell)){
@@ -137,8 +133,8 @@ public class TFE extends Game {
                 break;
             }
             case DOWN: { // DOWN
-                for(int i = 0; i < MAX_ROWS - 1; i++){
-                    for(int j = 0; j < MAX_COLS; j++){
+                for(int i = 0; i < ROWS - 1; i++){
+                    for(int j = 0; j < COLUMNS; j++){
                         int currCell = getTileValue(i, j);
                         if((getTileValue(i + 1, j) == 0 && currCell != 0) || 
                         		(getTileValue(i + 1, j) == currCell)){
@@ -152,8 +148,8 @@ public class TFE extends Game {
                 break;
             }
             case LEFT: { // LEFT
-                for(int i = 0; i < MAX_ROWS; i++){
-                    for(int j = 1; j < MAX_COLS; j++){
+                for(int i = 0; i < ROWS; i++){
+                    for(int j = 1; j < COLUMNS; j++){
                         int currCell = getTileValue(i, j);
                         if((getTileValue(i, j -1) == 0 && currCell != 0) || 
                         		(getTileValue(i, j-1) == currCell)){
@@ -167,8 +163,8 @@ public class TFE extends Game {
                 break;
             }
             case RIGHT: { // RIGHT
-                for(int i = 0; i < MAX_ROWS; i++){
-                    for(int j = 0; j < MAX_COLS - 1; j++){
+                for(int i = 0; i < ROWS; i++){
+                    for(int j = 0; j < COLUMNS - 1; j++){
                         int currCell = getTileValue(i, j);
                         if((getTileValue(i, j + 1) == 0 && currCell != 0) || 
                         		(getTileValue(i, j+1) == currCell)){
@@ -193,8 +189,8 @@ public class TFE extends Game {
     public void moveBlocks(Move dir) {
         switch(dir){
             case UP: { // UP
-                for(int j = 0; j < MAX_COLS; j++){
-                    for(int i = 1; i < MAX_ROWS; i++){
+                for(int j = 0; j < COLUMNS; j++){
+                    for(int i = 1; i < ROWS; i++){
                         int k = 0;
                         int[] tempArr = {0, 0 ,0, 0};
                         while(k < i){
@@ -216,9 +212,9 @@ public class TFE extends Game {
                 break;
             }
             case DOWN: { // DOWN
-                for(int j = 0; j < MAX_COLS; j++){
-                    for(int i = MAX_ROWS - 2; i >= 0; i--){
-                        int k = MAX_ROWS - 1;
+                for(int j = 0; j < COLUMNS; j++){
+                    for(int i = ROWS - 2; i >= 0; i--){
+                        int k = ROWS - 1;
                         int[] tempArr = {0, 0 ,0, 0};
                         while(k > i){
                             Cell A = new Cell(i, j);
@@ -239,9 +235,9 @@ public class TFE extends Game {
                 break;
             }
             case LEFT: { // LEFT
-                for(int i = 0; i < MAX_ROWS; i++){
+                for(int i = 0; i < ROWS; i++){
                     int[] tempArr = {0, 0 ,0, 0};
-                    for(int j = 1; j < MAX_COLS; j++){
+                    for(int j = 1; j < COLUMNS; j++){
                         int k = 0;
                         while(k < j){
                             Cell A = new Cell(i, j);
@@ -262,10 +258,10 @@ public class TFE extends Game {
                 break;
             }
             case RIGHT: { // RIGHT
-                for(int i = 0; i < MAX_ROWS; i++){
+                for(int i = 0; i < ROWS; i++){
                     int[] tempArr = {0, 0 ,0, 0};
-                    for(int j = MAX_COLS - 2; j >= 0; j--){
-                        int k = MAX_COLS - 1;
+                    for(int j = COLUMNS - 2; j >= 0; j--){
+                        int k = COLUMNS - 1;
                         while(k > j){
                             Cell A = new Cell(i, j);
                             Cell B = new Cell(i, k);
@@ -311,33 +307,30 @@ public class TFE extends Game {
     private void moveBlock(Cell A, Cell B){
         int tempVal = getTileValue(A.getRow(), A.getCol());
         setTileValue(B.getRow(), B.getCol(), tempVal);
-        setTileValue(A.getRow(), A.getCol(), 0);
+        grid.getTile(A.getRow(), A.getCol()).setValue(0);;
     }
 
 //    @Override
     public void checkGameover() {
-        GAME_ACTIVE = !boardFilled && highestScore.getValue() < goal;
+        GAME_ACTIVE = !boardFilled && highestScore.getValue() < GOAL;
     }
     
     void onGameOver() {
     	this.player.setHighScore(0, highestScore.getValue());
     }
     
-    int getTileValue(int row, int col) { return tileGrid[row][col].getValue(); }
+    int getTileValue(int row, int col) {
+    	return grid.getTile(row, col).getValue();
+	}
     
     public void setTileValue(int row, int col, int value) {
-        updateTileValue(tileGrid[row][col], value);
+        updateTileValue(grid.getTile(row, col), value);
     }
     
-    private void updateTileValue(TFETile tile, int value) {
+    private void updateTileValue(Tile tile, int value) {
    	 tile.setValue(value);
-   	 String label = tile.getValue() == 0 ? "" : String.valueOf(tile.getValue());
-   	 tile.getLabel().setText(label);
    }
     
-    private void setInitialCell(int row, int col, TFETile tile) {
-        tileGrid[row][col] = tile;
-    }
     
 //    @Override
 //    public void matchCheck() {
@@ -354,7 +347,7 @@ public class TFE extends Game {
     	player.setHighScore(0, score.getValue());
 //        System.out.println(player.getHighScore());
         player.setInGame(false);
-        function.apply(1);
+        onGameEnd.apply(1);
     }
 
 //    TODO fill either 2 or 4
@@ -363,8 +356,8 @@ public class TFE extends Game {
         // 90% fill 2, 10% fill 4
         
     	ArrayList<Cell> emptyCells = new ArrayList<Cell>();
-        for (int i = 0; i < MAX_ROWS; i++){
-            for(int j = 0; j < MAX_COLS; j++){
+        for (int i = 0; i < ROWS; i++){
+            for(int j = 0; j < COLUMNS; j++){
                 if (getTileValue(i, j) == 0){
                     emptyCells.add(new Cell(i, j));
                 }
