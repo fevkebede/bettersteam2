@@ -8,11 +8,12 @@ import tmge.TileFactory;
 import tmge.PlayerData;
 
 import java.util.ArrayList;
+import java.util.function.Function;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Insets;
-import javafx.scene.input.KeyCode;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
@@ -24,6 +25,7 @@ public class TFE {
 //	TODO use grid 
 	private PlayerData player;
 	private TFETile[][] tileGrid = new TFETile[MAX_ROWS][MAX_COLS];
+	Function<Integer, Integer> function;
 	
 	
     ArrayList<Cell> toDelete = new ArrayList<Cell>();
@@ -34,52 +36,24 @@ public class TFE {
     
     public static int MAX_ROWS = 4;
     public static int MAX_COLS = 4;
-    
-    private static final int UP = 1;
-    private static final int DOWN = 2;
-    private static final int LEFT = 3;
-    private static final int RIGHT = 4;
 
     private int goal = 2048;
     private boolean GAME_ACTIVE = true;
     
-    public TFE(PlayerData player) {
+    public TFE(PlayerData player, Function<Integer, Integer> function) {
     	this.player = player;
     	System.out.println("TFE Contructor " + player.getName() );
+    	
     }
 
-////    @Override
-//    public void start(Stage primaryStage) throws Exception {
-//    	Scene scene = new Scene(createContent(), MAX_ROWS * TILE_SIZE + 200, MAX_COLS * TILE_SIZE + 200);
-//        
-//		scene.setOnKeyPressed(e -> {
-//            if (e.getCode() == KeyCode.LEFT && validMove(LEFT)) {
-//            	System.out.println("LEFT");
-//            	handleMove(LEFT);
-//            } else if (e.getCode() == KeyCode.RIGHT && validMove(RIGHT)) {
-//            	System.out.println("RIGHT");
-//            	handleMove(RIGHT);
-//            } else if (e.getCode() == KeyCode.UP && validMove(UP)) {
-//            	System.out.println("UP");
-//            	handleMove(UP);
-//            } else if (e.getCode() == KeyCode.DOWN && validMove(DOWN)) {
-//            	System.out.println("DOWN");
-//            	handleMove(DOWN);
-//            }
-//        });
-//        
-//        primaryStage.setScene(scene);
-//        primaryStage.setTitle("Bejeweled");
-//        primaryStage.show();
-//    }
-    
-    public GridPane createGame() {
+
+	public GridPane createGame() {
     	
     	GridPane root = new GridPane();
-//    	root.setPadding(new Insets(20, 20, 20, 20));
+    	root.setHgap(10);
+        root.setVgap(10);
 
     	GridPane board = new GridPane();
-//        board.setPrefSize(MAX_ROWS * TILE_SIZE, MAX_COLS * TILE_SIZE);
         
         System.out.println("creating scene ");
         
@@ -98,8 +72,6 @@ public class TFE {
             }
         }
         
-        addKeyPressListeners(board);
-        
         fillTwo();
         fillTwo();
 
@@ -107,44 +79,39 @@ public class TFE {
         Text highestBrick = new Text();
         Text playerScore = new Text();
         
+        Button up = new Button("Up");
+        Button down = new Button("Down");
+        Button left = new Button("Left");
+        Button right = new Button("Right");
+        
+        up.setOnAction(e -> { if (validMove(Move.UP)) handleMove(Move.UP); });
+        down.setOnAction(e -> { if (validMove(Move.DOWN)) handleMove(Move.DOWN); });
+        left.setOnAction(e -> { if (validMove(Move.LEFT)) handleMove(Move.LEFT); });
+        right.setOnAction(e -> { if (validMove(Move.RIGHT)) handleMove(Move.RIGHT); });
+        
+        ButtonBar options = new ButtonBar();
+        options.getButtons().addAll(up, down, left, right);
+        
         title.setFont(Font.font(64));
         highestBrick.setFont(Font.font(44));
         highestBrick.textProperty().bind(highestScore.asString("Highest Brick: %d"));
+        
         playerScore.setFont(Font.font(44));
         playerScore.textProperty().bind(score.asString("Score: %d"));
 
-//        add(item_to_add, colInd, rowInd)
-        root.add(title, 0, 0);
-        root.add(board, 0, 1);
-        root.add(highestBrick, 0, 2);
-        root.add(playerScore, 0, 3);
+        
+//        add(item_to_add, colInd, rowInd, int colspan, int rowspan)
+//        root = 2 cols x 4 rows
+        root.add(title, 0, 0, 2, 1);
+        root.add(board, 0, 1, 1, 2);
+        root.add(options, 0, 3);
+        root.add(highestBrick, 1, 1);
+        root.add(playerScore, 1, 2);
+        
         return root;
     }
     
-    
-    public void addKeyPressListeners(GridPane board) {
-    	System.out.println("addKeyPressListeners");
-    	
-		board.setOnKeyPressed(e -> {
-			System.out.println("Handle key press");
-            if (e.getCode() == KeyCode.LEFT && validMove(LEFT)) {
-            	System.out.println("LEFT");
-            	handleMove(LEFT);
-            } else if (e.getCode() == KeyCode.RIGHT && validMove(RIGHT)) {
-            	System.out.println("RIGHT");
-            	handleMove(RIGHT);
-            } else if (e.getCode() == KeyCode.UP && validMove(UP)) {
-            	System.out.println("UP");
-            	handleMove(UP);
-            } else if (e.getCode() == KeyCode.DOWN && validMove(DOWN)) {
-            	System.out.println("DOWN");
-            	handleMove(DOWN);
-            }
-        });
-    }
-    
-    
-    private void handleMove(int dir) {
+    private void handleMove(Move dir) {
     	
         if (GAME_ACTIVE) {
         	moveBlocks(dir);
@@ -154,7 +121,8 @@ public class TFE {
         	System.out.println("Game over");
         }
     }
-    private boolean validMove(int dir) {
+    
+    private boolean validMove(Move dir) {
         switch(dir){
             case UP: { // UP
                 for(int i = 1; i < MAX_ROWS; i++){
@@ -225,7 +193,7 @@ public class TFE {
         return false;
     }
     
-    public void moveBlocks(int dir) {
+    public void moveBlocks(Move dir) {
         switch(dir){
             case UP: { // UP
                 for(int j = 0; j < MAX_COLS; j++){
