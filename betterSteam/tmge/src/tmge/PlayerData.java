@@ -24,7 +24,7 @@ public class PlayerData {
 	}
 
 	public void setHighScore(int GAME_FLAG, int highScore) {
-		
+		this.highScore = highScore;
 		switch (GAME_FLAG) {
 			case 0: {
 				if (playerData.getTfeHighScore() < highScore) {

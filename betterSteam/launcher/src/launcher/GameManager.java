@@ -228,30 +228,169 @@ public class GameManager  extends Application {
     	window.getChildren().clear();
     }
     
-    private void playerNumberScreen() {
+    private void playerNumberScreenTfe() {
     	Function<Integer, Integer> endGame = (e) -> {
             onEndGame();
             return e;
         };
-        
-        
     	
     	Button singleplayer = new Button("Singleplayer");
     	Button multiplayer = new Button("Multiplayer");
     	Button close = new Button("Go Back");
     	
+    	window.add(singleplayer, 0, 0);
+    	window.add(multiplayer, 1, 0);
+    	
     	singleplayer.setOnAction(e -> {
     		clearScreen();
-    		
+    		System.out.println("run tge");
+			TFE tfe = new TFE(currentPlayer, endGame);
+			GridPane tfe_board = tfe.createGame();
+			window.add(tfe_board, 0, 2);
     	});
+    	
+    	multiplayer.setOnAction(e -> {
+    		clearScreen();
+    		
+    		close.setOnAction(f -> {
+        		clearScreen();
+        		playerNumberScreenTfe();
+        	});
+        	
+        	window.add(close, 0, 1);
+        	
+    		// get new player name
+    		Button start = new Button("Start!");
+    		TextField input = new TextField();
+        	input.setPromptText("Enter Second Player Name");
+        	
+        	window.add(input, 0, 0);
+        	window.add(start, 1, 0);
+    		
+        	start.setOnAction(g -> {
+        		
+        		// for first player's turn
+        		clearScreen();
+        		System.out.println("run tge");
+    			TFE tfe = new TFE(currentPlayer, endGame);
+    			GridPane tfe_board = tfe.createGame();
+    			window.add(tfe_board, 0, 2);
+    			
+    			// set second player
+    			PlayerData player2 = new PlayerData(input.getText());
+    			players.put(player2.getName(), player2);
+    			
+    			// for second player
+    			clearScreen();
+        		System.out.println("run tge");
+    			tfe = new TFE(player2, endGame);
+    			tfe_board = tfe.createGame();
+    			window.add(tfe_board, 0, 2);
+    			
+    			if(currentPlayer.getHighScore() > player2.getHighScore()) {
+    				Label label = new Label(currentPlayer.getName() + " won with a score of " + currentPlayer.getHighScore() + " /2048 over " +  player2.getName() + "'s score of " + player2.getHighScore() + "/2048!");
+    				window.add(label, 0, 4);
+    			}
+    			else if(currentPlayer.getHighScore() < player2.getHighScore()) {
+    				Label label = new Label(player2.getName() + " won with a score of " + player2.getHighScore() + " /2048 over " +  currentPlayer.getName() + "'s score of " + currentPlayer.getHighScore() + "/2048!");
+    				window.add(label, 0, 4);
+    			}
+    			else { // players tied
+    				Label label = new Label("Wow, you both tied with a score of " + currentPlayer.getHighScore() + "/2048!");
+    				window.add(label, 0, 4);
+    			}
+        	});
+    	});
+    	
     	
     	close.setOnAction(e -> {
     		clearScreen();
     		showMenu();
     	});
     	
+    	window.add(close, 0, 1);
+    }
+    
+    private void playerNumberScreenBejeweled() {
+    	Function<Integer, Integer> endGame = (e) -> {
+            onEndGame();
+            return e;
+        };
+    	
+    	Button singleplayer = new Button("Singleplayer");
+    	Button multiplayer = new Button("Multiplayer");
+    	Button close = new Button("Go Back");
+    	
     	window.add(singleplayer, 0, 0);
     	window.add(multiplayer, 1, 0);
+    	
+    	singleplayer.setOnAction(e -> {
+    		clearScreen();
+    		System.out.println("run tge");
+    		Bejeweled bejeweled = new Bejeweled(currentPlayer, endGame);
+	    	GridPane bejeweled_board = bejeweled.createGame();
+			window.add(bejeweled_board, 0, 2);
+    	});
+    	
+    	multiplayer.setOnAction(e -> {
+    		clearScreen();
+    		
+    		close.setOnAction(f -> {
+        		clearScreen();
+        		playerNumberScreenBejeweled();
+        	});
+        	
+        	window.add(close, 0, 1);
+        	
+    		// get new player name
+    		Button start = new Button("Start!");
+    		TextField input = new TextField();
+        	input.setPromptText("Enter Second Player Name");
+        	
+        	window.add(input, 0, 0);
+        	window.add(start, 1, 0);
+    		
+        	start.setOnAction(g -> {
+        		
+        		// for first player's turn
+        		clearScreen();
+        		System.out.println("run tge");
+        		Bejeweled bejeweled = new Bejeweled(currentPlayer, endGame);
+    	    	GridPane bejeweled_board = bejeweled.createGame();
+    			window.add(bejeweled_board, 0, 2);
+    			
+    			// set second player
+    			PlayerData player2 = new PlayerData(input.getText());
+    			players.put(player2.getName(), player2);
+    			
+    			// for second player
+    			clearScreen();
+        		System.out.println("run tge");
+        		bejeweled = new Bejeweled(player2, endGame);
+    	    	bejeweled_board = bejeweled.createGame();
+    			window.add(bejeweled_board, 0, 2);
+    			
+    			if(currentPlayer.getHighScore() > player2.getHighScore()) {
+    				Label label = new Label(currentPlayer.getName() + " won with a score of " + currentPlayer.getHighScore() + " over " +  player2.getName() + "'s score of " + player2.getHighScore() + "!");
+    				window.add(label, 0, 4);
+    			}
+    			else if(currentPlayer.getHighScore() < player2.getHighScore()) {
+    				Label label = new Label(player2.getName() + " won with a score of " + player2.getHighScore() + " over " +  currentPlayer.getName() + "'s score of " + currentPlayer.getHighScore() + "!");
+    				window.add(label, 0, 4);
+    			}
+    			else { // players tied
+    				Label label = new Label("Wow, you both tied with a score of " + currentPlayer.getHighScore() + "!");
+    				window.add(label, 0, 4);
+    			}
+        	});
+    	});
+    	
+    	
+    	close.setOnAction(e -> {
+    		clearScreen();
+    		showMenu();
+    	});
+    	
     	window.add(close, 0, 1);
     }
     
@@ -266,26 +405,22 @@ public class GameManager  extends Application {
     	switch(type) {
     		case TFE:
     			
-    			// New screen
-    			// Ask singleplayer or multiplayer
-    			// if single, start game
-    			// else (multiplayer), ask for new name
-    			//           display winner at top of page
-    			
-    			System.out.println("run tge");
-    			TFE tfe = new TFE(currentPlayer, endGame);
-    			GridPane tfe_board = tfe.createGame();
-    			
-    			window.add(tfe_board, 0, 2);
+//    			System.out.println("run tge");
+//    			TFE tfe = new TFE(currentPlayer, endGame);
+//    			GridPane tfe_board = tfe.createGame();
+//    			
+//    			window.add(tfe_board, 0, 2);
+    			playerNumberScreenTfe();
     			break;
     			
     		case BEJEWELED:
-    			System.out.println("run bejeweled");
-    			
-    			Bejeweled bejeweled = new Bejeweled(currentPlayer, endGame);
-    	    	GridPane bejeweled_board = bejeweled.createGame();
-    	    	
-    	    	window.add(bejeweled_board, 0, 2);
+//    			System.out.println("run bejeweled");
+//    			
+//    			Bejeweled bejeweled = new Bejeweled(currentPlayer, endGame);
+//    	    	GridPane bejeweled_board = bejeweled.createGame();
+//    	    	
+//    	    	window.add(bejeweled_board, 0, 2);
+    			playerNumberScreenBejeweled();
     			break;
     	}
     }
