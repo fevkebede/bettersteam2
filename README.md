@@ -4,9 +4,9 @@
 
 **How to run**
 
-##Description
-- Design and implement an extensible Tile-Matching Game Environment (TMGE).  We will adhere to the definition of a tile-matching game.
-- With a team of 5 or 6 people
+## Description
+- 1. Design and implement an extensible Tile-Matching Game Environment (TMGE).  We will adhere to the definition of a tile-matching game.
+- 2. With a team of 5 or 6 people
 
 **Requirements**
 - 1. The TMGE should accommodate any tile-matching game that involves a grid layout and game elements on this layout, including games such as Tetris, Klax, Bejeweled, Bust-a-Move, Puzzle Bobble, Candy Crush, Dr. Mario, Puzzle Fighter, etc. 
