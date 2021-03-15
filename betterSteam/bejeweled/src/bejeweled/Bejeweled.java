@@ -30,7 +30,6 @@ public class Bejeweled extends Game {
     private boolean GAME_ACTIVE = true;
     
 	private ArrayList<Cell> updateList = new ArrayList<Cell>(); // List of locations to delete
-	private ArrayList<Cell> matchingPairs = new ArrayList<Cell>();
     private BejeweledTileFactory bejeweledTileFactory = BejeweledTileFactory.getInstance();
     private BejeweledTile selected = null;
     
@@ -62,7 +61,7 @@ public class Bejeweled extends Game {
         Text textMoves = new Text();
         Text textGoal  = new Text();
         Text textScore = createScoreText("Score: 0");
-        Button quit = new Button("Quit");
+        Button quit = new Button("Quit and Save");
         
         quit.setOnAction(e -> {
     		quit();

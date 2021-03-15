@@ -28,7 +28,6 @@ public abstract class Game {
 	protected abstract GridPane createGame();
 	protected abstract void checkGameover();
 	protected abstract void quit();
-//	public abstract void save();
 	
 	
 	protected GridPane createBoard(boolean withLabels) {

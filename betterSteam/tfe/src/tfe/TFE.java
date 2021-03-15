@@ -58,7 +58,7 @@ public class TFE extends Game {
         Button down = new Button("Down");
         Button left = new Button("Left");
         Button right = new Button("Right");
-        Button quit = new Button("Quit");
+        Button quit = new Button("Quit and Save");
         
         up.setOnAction(e -> { if (validMove(Move.UP)) handleMove(Move.UP); });
         down.setOnAction(e -> { if (validMove(Move.DOWN)) handleMove(Move.DOWN); });
@@ -293,8 +293,6 @@ public class TFE extends Game {
         B.setValue(A.getValue());
         A.setValue(0);
     }
-    
-    
 
     @Override
     protected void checkGameover() {

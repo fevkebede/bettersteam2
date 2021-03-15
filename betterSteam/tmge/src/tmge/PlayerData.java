@@ -4,7 +4,6 @@ public class PlayerData {
 	private String name;
     private int highScore;
     private Statistics playerData;
-//    private boolean inGame;
 
     public PlayerData(String name) {
         playerData = new Statistics();
