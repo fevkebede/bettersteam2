@@ -24,9 +24,15 @@ public class Bejeweled extends Game {
     private final static int ROWS = 7;
     private final static int COLUMNS = 7;
     
+    private final static int UP= 1;
+    private final static int DOWN = 2;
+    private final static int LEFT = 3;
+    private final static int RIGHT = 4;
+    
     private boolean GAME_ACTIVE = true;
     
 	private ArrayList<Cell> updateList = new ArrayList<Cell>(); // List of locations to delete
+	private ArrayList<Cell> matchingPairs = new ArrayList<Cell>();
     private BejeweledTileFactory bejeweledTileFactory = BejeweledTileFactory.getInstance();
     private BejeweledTile selected = null;
     
@@ -134,9 +140,9 @@ public class Bejeweled extends Game {
         }
         return false;
     }
-
-
-//    @Override
+    
+    
+//  @Override
     private void matchCheck(Tile a, Tile b) {
         // HORIZONTAL SEARCH
         for (int i = 0; i < ROWS; i++) {
@@ -153,6 +159,148 @@ public class Bejeweled extends Game {
         	
         }
     }
+    
+    
+    private boolean executePossibleMoves(Cell position) {
+    	//	Cell position is a jewel that must be swapped in every direction possible
+    	//  in order to find potential matches 
+    	int row = position.getRow();
+    	int col = position.getCol();
+    	
+    	
+    	//top row
+    	if(row == 0) {
+    		
+    		//top left coord
+    		if(col == 0) { 
+    			//swap down right 
+    			
+    		//top right coord	
+    		}else if(col == COLUMNS-1){
+    			//swap down left
+    		
+    		//top middle coords
+    		}else {
+    			//swap down left right
+    			
+    		}
+    	}
+    	
+    	//bottom row 
+    	else if(row == ROWS-1) {
+    		
+    		//bottom left coord
+    		if(col == 0) { 
+    			//swap up right
+    			
+    		//bottom right coord	
+    		}else if(col == COLUMNS-1){
+    			//swap up left
+    		
+    		//bottom middle coords
+    		}else {
+    			//swap up left right 
+    			
+    		}
+    	//every other coord 
+    	}else { 
+    		//swap up down left right
+    		swap(row, col, UP);
+
+    	}
+    	
+    	return false; 
+    }
+    
+    private void swap(int row, int col, int dir) {
+    	
+        Tile firstTile = grid.getTile(row, col);
+        
+        switch (dir) {
+            case UP: {
+                // SWAP UP
+                Tile secondTile = grid.getTile(row-1,col);
+              
+                int firstTileValue = firstTile.getValue();
+                firstTile.setValue(secondTile.getValue());
+                secondTile.setValue(firstTileValue);
+                break;
+            }
+            case DOWN: {
+                // SWAP DOWN
+ 
+                Tile secondTile = grid.getTile(row+1,col);
+                
+                int firstTileValue = firstTile.getValue();
+                firstTile.setValue(secondTile.getValue());
+                secondTile.setValue(firstTileValue);
+                break;
+                break;
+            }
+            case LEFT: {
+                // SWAP LEFT
+                Tile secondTile = grid.getTile(row,col-1);
+                
+                int firstTileValue = firstTile.getValue();
+                
+                firstTile.setValue(secondTile.getValue());
+                secondTile.setValue(firstTileValue);
+                break;
+            }
+            case RIGHT: {
+                // SWAP RIGHT
+                Tile secondTile = grid.getTile(row,col+1);
+                
+                int firstTileValue = firstTile.getValue();
+                
+                firstTile.setValue(secondTile.getValue());
+                secondTile.setValue(firstTileValue);
+                break;
+            }
+        }
+    
+    }
+    private boolean findPossibleMatches() {
+    	//iterate through each cell 
+        for (int i = 0; i < ROWS; i++) {
+        	for(int j = 0; j < COLUMNS; j++) {
+        		executePossibleMoves(new Cell(i, j));
+        	}
+        }
+        return false;
+    }
+    
+
+    private boolean matchExists(int position, boolean vertical) {
+        ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
+        int current = -1;
+
+        for (int i = 0; i < ROWS; i++) {
+        	
+        	int tileValue = vertical ? 
+        			grid.getTile(i, position).getValue() : grid.getTile(position, i).getValue();
+        	
+        			
+            if (tileValue != current) {
+                if (tempToDelete.size() >= 3) {
+                    return true; 
+                }
+                tempToDelete.clear();
+                tempToDelete.add(vertical ? new Cell(i, position) : new Cell(position, i));
+                
+                current = tileValue;
+
+            } else {
+                tempToDelete.add(vertical ? new Cell(i, position) : new Cell(position, i));
+                if (i == ROWS - 1 && tempToDelete.size() >= 3) {
+                    return true; 
+                }
+            }
+        }
+        
+        return false; 
+    }
+    
     
     private void findMatch(int position, boolean vertical) {
         ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
