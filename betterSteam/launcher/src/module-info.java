@@ -1,8 +1,6 @@
 module launcher {
 	requires transitive tfe;
 	requires transitive bejeweled;
-//	requires tmge;
-	
 	
 	requires transitive javafx.graphics;
 	requires transitive javafx.controls;

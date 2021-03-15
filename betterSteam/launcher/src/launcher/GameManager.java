@@ -35,13 +35,12 @@ public class GameManager  extends Application {
 	Button home = new Button("Home");
 	
 	public GameManager() {
-		System.out.println("GameManager Constructor");
+		System.out.println("Game starting.");
 		initializeButtons();
 	}
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-    	System.out.println("GameManager javafx start");
     	
     	window.setAlignment(Pos.CENTER);
     	window.setHgap(20); 
@@ -189,10 +188,6 @@ public class GameManager  extends Application {
             return e;
         };
         
-        System.out.println("\nstartGame");
-        System.out.println("\nmultiplayer " + multiplayerGame != null);
-        System.out.println("\nisSecondGame " + isSecondGame);
-        
         PlayerData player;
         
         if (multiplayerGame != null && isSecondGame == true) {
@@ -214,7 +209,6 @@ public class GameManager  extends Application {
         
      	switch(type) {
      		case TFE:
-     			System.out.println("run tge");
      			TFE tfe = new TFE(player, endGame);
      			GridPane tfe_board = tfe.createGame();
      			
@@ -222,7 +216,6 @@ public class GameManager  extends Application {
      			break;
 
      		case BEJEWELED:
-     			System.out.println("run bejeweled");
 
      			Bejeweled bejeweled = new Bejeweled(player, endGame);
      	    	GridPane bejeweled_board = bejeweled.createGame();

@@ -37,7 +37,6 @@ public class TFE extends Game {
     	this.player = player;
     	this.onGameEnd = onGameEnd;
     	
-    	System.out.println("TFE Contructor " + player.getName() );
     }
     
 	public GridPane createGame() {
@@ -93,8 +92,6 @@ public class TFE extends Game {
         	moveBlocks(dir);
             fillTwo();
             checkGameover();
-        } else {
-        	System.out.println("Game over");
         }
     }
     
@@ -119,7 +116,6 @@ public class TFE extends Game {
       Tile to_fill = grid.getTile(tempCell.getRow(), tempCell.getCol());
       int fill_val = tfeTileFactory.getFillValue();
       
-//      System.out.println("fill_val " + fill_val);
       to_fill.setValue(fill_val);
   }  
     
@@ -284,7 +280,6 @@ public class TFE extends Game {
         B.setValue(doubleValue);
         A.setValue(0);
 
-        System.out.println("double " + doubleValue + " highestScore " + highestScore.getValue());
         if (doubleValue > highestScore.getValue()){ highestScore.setValue(doubleValue); }
         score.setValue(score.getValue() + doubleValue);
     }

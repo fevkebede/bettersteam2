@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+
 public class Bejeweled extends Game {
     private final static int ROWS = 7;
     private final static int COLUMNS = 7;
