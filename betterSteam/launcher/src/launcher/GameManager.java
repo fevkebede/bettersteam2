@@ -32,6 +32,7 @@ public class GameManager  extends Application {
 	Button viewHighScores = new Button("View Scores");
 	Button logout = new Button("Logout");
 	Button settings = new Button("Settings");
+	Button home = new Button("Home");
 	
 	public GameManager() {
 		System.out.println("GameManager Constructor");
@@ -126,12 +127,7 @@ public class GameManager  extends Application {
     	Button clearTfe = new Button("Clear 2048");
     	Button clearBejeweled = new Button("Clear Bejeweled");
     	Button clearAll = new Button("Clear all high scores");
-    	Button close = new Button("Go Back");
-    	
-    	close.setOnAction(e -> {
-    		clearScreen();
-    		showMenu();
-    	});
+
     	clearTfe.setOnAction(e -> {
     		currentPlayer.clearTfeHighScore();
     		clearScreen();
@@ -152,7 +148,7 @@ public class GameManager  extends Application {
     	window.add(clearTfe, 0, 2);
     	window.add(clearBejeweled, 1, 2);
     	window.add(clearAll, 0, 3);
-    	window.add(close, 0, 4);
+    	window.add(home, 0, 4);
     }
     
     private void showHighScores() {    	
@@ -162,16 +158,10 @@ public class GameManager  extends Application {
     	Text tfeScore = new Text();
     	tfeScore.setText("2048\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getTfeHighScore()));
     	
-    	Button close = new Button("Go Back");
-    	
-    	close.setOnAction(e -> {
-    		clearScreen();
-    		showMenu();
-    	});
     	
     	window.add(tfeScore, 0, 1);
     	window.add(bejeweledScore, 1, 1);
-    	window.add(close, 0, 3);
+    	window.add(home, 0, 3);
     }
     
     private void showAllHighScores() {    	
@@ -241,16 +231,11 @@ public class GameManager  extends Application {
         };
     	
         Label p2NameLabel = new Label("Enter Player 2's Name:");
-    	Button goHome = new Button("Go Home");
     	
 		Button start = new Button("Start!");
 		TextField input = new TextField();
     	input.setPromptText("Enter Second Player Name"); // get new player name
     	
-    	goHome.setOnAction(e -> {
-    		clearScreen();
-    		showMenu();
-    	});
     	
     	if(currentGame == 0) {
     		start.setOnAction(e -> {
@@ -295,7 +280,7 @@ public class GameManager  extends Application {
     	window.add(p2NameLabel, 0, 0);
     	window.add(input, 0, 1);
     	window.add(start, 1, 1);
-    	window.add(goHome, 0, 2);
+    	window.add(home, 0, 2);
     }
     
     private void startGame(GameType type) {
@@ -308,7 +293,6 @@ public class GameManager  extends Application {
     
         Button singleplayer = new Button("Singleplayer");
     	Button multiplayer = new Button("Multiplayer");
-    	Button back = new Button("Go Back");
     	
     	switch(type) {
     		case TFE:
@@ -368,12 +352,8 @@ public class GameManager  extends Application {
     	    	window.add(multiplayer, 1, 0);
     			break;
     	}
-    	back.setOnAction(e -> {
-    		clearScreen();
-    		showMenu();
-    	});
     	
-    	window.add(back, 0, 1);
+    	window.add(home, 0, 1);
     }
     
     private void winnerScreen() { // prints the winner between two players in multiplayer mode
@@ -443,6 +423,11 @@ public class GameManager  extends Application {
     	settings.setOnAction(e -> {
     		clearScreen();
     		settingScreen();
+    	});
+    	
+    	home.setOnAction(e -> {
+    		clearScreen();
+    		showMenu();
     	});
     	
     }
