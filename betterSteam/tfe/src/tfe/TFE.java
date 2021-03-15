@@ -309,7 +309,6 @@ public class TFE extends Game {
     @Override
     protected void quit() { 
     	player.setHighScore(0, score.getValue());
-        player.setInGame(false);
         onGameEnd.apply(1);
     }
   

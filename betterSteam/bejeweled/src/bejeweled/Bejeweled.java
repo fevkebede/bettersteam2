@@ -18,8 +18,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-
-
 public class Bejeweled extends Game {
     private final static int ROWS = 7;
     private final static int COLUMNS = 7;
@@ -39,6 +37,8 @@ public class Bejeweled extends Game {
     private IntegerProperty movesLeft = new SimpleIntegerProperty(30);
     private IntegerProperty level = new SimpleIntegerProperty(1);
     private IntegerProperty goal = new SimpleIntegerProperty(500);
+    
+    private Text gameOverLabel = new Text();
  
     
     public Bejeweled(PlayerData player, Function<Integer, Integer> onGameEnd) {
@@ -46,7 +46,6 @@ public class Bejeweled extends Game {
     	this.grid = new Grid(ROWS, COLUMNS);
     	this.player = player;
     	this.onGameEnd = onGameEnd;
-    	System.out.println("Bejeweled Contructor for " + player.getName() );
     }
    
     
@@ -67,6 +66,7 @@ public class Bejeweled extends Game {
         
         quit.setOnAction(e -> {
     		quit();
+    		onGameEnd.apply(1);
     	});
         
         textLevel.setFont(Font.font(44));
@@ -84,6 +84,8 @@ public class Bejeweled extends Game {
         root.add(textGoal, 0, 4);
         root.add(textScore, 0, 5);
         root.add(quit, 0, 6);
+        root.add(gameOverLabel, 1, 6);
+        
         return root;
     }
     
@@ -116,7 +118,8 @@ public class Bejeweled extends Game {
         checkGameover();
         
         if (!GAME_ACTIVE) {
-        	quit();
+        	gameOverLabel.setText("Game Over! Out of moves!");
+        	gameOverLabel.setFont(Font.font(20));
         }
     }
    
@@ -146,11 +149,9 @@ public class Bejeweled extends Game {
     private void matchCheck(Tile a, Tile b) {
         // HORIZONTAL SEARCH
         for (int i = 0; i < ROWS; i++) {
-//            horizontalMatch(i);
         	findMatch(i, false);
         }
         for (int i = 0; i < COLUMNS; i++) {
-//            verticalMatch(i);
         	findMatch(i, true);
         }
         if (updateList.size() == 0) {
@@ -233,10 +234,6 @@ public class Bejeweled extends Game {
     	//  in order to find potential matches 
     	int row = position.getRow();
     	int col = position.getCol();
-    	
-    	System.out.print(row);
-    	System.out.print(", ");
-    	System.out.println(col);
     	
     	//top row
     	if(row == 0) {
@@ -511,67 +508,14 @@ public class Bejeweled extends Game {
         }
     }
     
-    
-//    private void horizontalMatch(int row) {
-//        ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
-//        int current = -1;
-//
-//        for (int i = 0; i < ROWS; i++) {
-//        	int tileValue = grid.getTile(row, i).getValue();
-//        	
-//            if (tileValue != current) {
-//                if (tempToDelete.size() >= 3) {
-//                    updateList.addAll(tempToDelete);
-//                }
-//                tempToDelete.clear();
-//                tempToDelete.add(new Cell(row, i));
-//                
-//                current = tileValue;
-//
-//            } else {
-//                tempToDelete.add(new Cell(row, i));
-//                if (i == ROWS - 1 && tempToDelete.size() >= 3) {
-//                    updateList.addAll(tempToDelete);
-//                }
-//            }
-//        }
-//    }
-//
-//    private void verticalMatch(int col) {
-//        ArrayList<Cell> tempToDelete = new ArrayList<Cell>();
-//        int current = -1;
-//
-//        for (int i = 0; i < COLUMNS; i++) {
-//        	int tileValue = grid.getTile(i, col).getValue();
-//        	
-//            if (tileValue != current) {
-//                if (tempToDelete.size() >= 3) {
-//                    updateList.addAll(tempToDelete);
-//                }
-//                tempToDelete.clear();
-//                tempToDelete.add(new Cell(i, col));
-//
-//                current = tileValue;
-//
-//            } else {
-//                tempToDelete.add(new Cell(i, col));
-//                if (i == COLUMNS - 1 && tempToDelete.size() >= 3) {
-//                    updateList.addAll(tempToDelete);
-//                }
-//            }
-//        }
-//    }
-    
 
     private void removeAllMatches(boolean FLAG) {
         boolean CHECKING = true;
         while (CHECKING) {
             for (int i = 0; i < ROWS; i++) {
-//                horizontalMatch(i);
             	findMatch(i, false);
             }
             for (int i = 0; i < COLUMNS; i++) {
-//                verticalMatch(i);
             	findMatch(i, true);
             }
 
@@ -630,22 +574,15 @@ public class Bejeweled extends Game {
 
     @Override
     protected void quit() {
-//        return score.getValue();
         player.setHighScore(1, score.getValue());
-        System.out.println(player.getHighScore());
-        //player.setInGame(false);
-        onGameEnd.apply(1);
     }
     
     
   @Override
   protected void checkGameover() {
-	    //no possible matches 
 	  	if(findPossibleMatches()) {
-	  		System.out.println("Possible moves found");
 	  		GAME_ACTIVE = (movesLeft.getValue() >= 0);
 	  	}else {
-	  		System.out.println("No possible moves found");
 	  		GAME_ACTIVE = false; 
 	  	}
     }
