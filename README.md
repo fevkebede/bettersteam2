@@ -2,7 +2,8 @@
 
 # TMGE INF122
 
-**How to run**
+**Instructions on how executing the jar file**
+
 WE NEED THIS! JAR
 
 ## Description
