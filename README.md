@@ -1,8 +1,9 @@
 # bettersteam
 
-#TMGE INF122
+# TMGE INF122
 
 **How to run**
+WE NEED THIS! JAR
 
 ## Description
 - 1. Design and implement an extensible Tile-Matching Game Environment (TMGE).  We will adhere to the definition of a tile-matching game.
