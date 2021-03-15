@@ -18,16 +18,16 @@ public class TFETile extends Tile {
 
     }
     
-    public IntegerProperty getValueProperty() {
-    	return value;
-    }
-    
     public int getValue() {
     	return value.getValue();
     }
 
     public void setValue(int val) {
     	this.value.setValue(val);
+    }
+    
+    protected IntegerProperty getValueProperty() {
+    	return value;
     }
 
     @Override

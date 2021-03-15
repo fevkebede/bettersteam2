@@ -4,7 +4,6 @@ public class PlayerData {
 	private String name;
     private int highScore;
     private Statistics playerData;
-    private boolean inGame;
 
     public PlayerData(String name) {
         playerData = new Statistics();
@@ -19,10 +18,6 @@ public class PlayerData {
 		return highScore;
 	}
 	
-	public boolean getInGame() {
-		return inGame;
-	}
-
 	public void setHighScore(int GAME_FLAG, int highScore) {
 		this.highScore = highScore;
 		switch (GAME_FLAG) {
@@ -41,10 +36,6 @@ public class PlayerData {
 		}
 	}
 	
-	public void setInGame(boolean inGame) {
-		this.inGame = inGame;
-	}
-
 	public void saveData(Statistics statistics) {
 		playerData = statistics;
 	}

@@ -23,15 +23,16 @@ public class GameManager  extends Application {
 	private PlayerData currentPlayer;
 	
 	private PlayerData player2 = null; // Creating player2 placeholder
-	private boolean isMultiplayer = false; // Identify if multiplayer game is being played
-	private int currentGame = -1; // Identifies which game is being played - only matters for multiplayer
+	private boolean isSecondGame = false; // Identify if multiplayer game is being played
+	private GameType multiplayerGame; // Identifies which game is being played - only matters for multiplayer
 	
 	GridPane window = new GridPane();
 	Button playTFE = new Button("2048");
 	Button playBejeweled = new Button("Bejeweled");
-	Button viewHighScores = new Button("View Scores");
+	Button allHighScores = new Button("View All Scores");
 	Button logout = new Button("Logout");
-	Button settings = new Button("Settings");
+	Button myScores = new Button("My Scores");
+	Button home = new Button("Home");
 	
 	public GameManager() {
 		System.out.println("GameManager Constructor");
@@ -46,42 +47,58 @@ public class GameManager  extends Application {
     	window.setHgap(20); 
         window.setVgap(20);
 
-
-    	showLoginScreen();
+        showPlayersScreen();
    	
         primaryStage.setScene(new Scene(window, 800, 800));
         primaryStage.setTitle("Better Steam");
         primaryStage.show();
     }
     
-    private void showLoginScreen() {
+    private void showPlayersScreen() {
+    	clearScreen();
     	
     	Label label = new Label("New player? Enter name!");
     	TextField input = new TextField();
     	input.setPromptText("Name");
 
     	Button submit = new Button("Submit");
-    	Button highScores = new Button("High Scores");
     	
     	submit.setOnAction(e -> {
     		
     		String name = input.getText();
     		
-    		setCurrentPlayer(name);
-    		
-    		clearScreen();
-    		showMenu();
+    		if (multiplayerGame == null) {    			
+    			setCurrentPlayer(name);
+    			
+    			clearScreen();
+    			showMenu();
+    		} else {
+    			
+    			setPlayerTwo(name);
+    			startGame(multiplayerGame);
+    		}
     	});
     	
-    	highScores.setOnAction(e -> {
-    		clearScreen();
-    		showAllHighScores();
-    	});
+    	window.add(getPlayersButtons(), 0, 0);
+    	window.add(label, 0, 1);
+    	window.add(input, 0	, 2);
+    	window.add(submit, 1, 2);
+    	
+    }
+    
+    private GridPane getPlayersButtons() {
+    	
+    	GridPane playerButtons = new GridPane();
     	
     	int playerIndex = 1;
+    	
     	if (!players.isEmpty()) {
+    		
+    		playerButtons.setHgap(10); 
+    		playerButtons.setVgap(10);
+    		
     		Text saved = new Text("Saved Players");
-        	window.add(saved, 0, 0);
+    		playerButtons.add(saved, 0, 0);
         	
         	
         	for (Map.Entry<String, PlayerData> mapElement : players.entrySet()) { 
@@ -89,21 +106,38 @@ public class GameManager  extends Application {
                 
                 Button usernameButton = new Button(key);
                 usernameButton.setOnAction(e -> {
-                	currentPlayer = players.get(key);
-                	clearScreen();
-            		showMenu();
+                	
+                	if (multiplayerGame == null) {
+                		
+                		currentPlayer = players.get(key);
+                		clearScreen();
+                		showMenu();
+                	} else {
+                		player2 = players.get(key);
+                		startGame(multiplayerGame);
+                	}
                 });
-                window.add(usernameButton, 0, playerIndex);
+                
+                playerButtons.add(usernameButton, 0, playerIndex);
                 playerIndex++;
             } 
     	}
     	
-    	window.add(label, 0, 0+playerIndex);
-    	window.add(input, 0	, 1+playerIndex);
-    	window.add(submit, 1, 1+playerIndex);
-    	window.add(highScores, 0, 2+playerIndex);
-    	
+    	return playerButtons;
     }
+    
+    
+    private void showMenu() {
+    	Text welcome = new Text(String.format("Welcome, %s!", currentPlayer.getName()));
+    	welcome.setFont(Font.font(20));
+    	window.add(welcome, 0, 0);
+    	window.add(playBejeweled, 0, 1);
+    	window.add(playTFE, 1, 1);
+    	window.add(allHighScores, 1, 2);
+    	window.add(logout, 0, 3);
+    	window.add(myScores, 0, 2);
+    }
+    
     
     private void setCurrentPlayer(String name) {
 		if(players.containsKey(name)) { // check if player exists
@@ -115,63 +149,101 @@ public class GameManager  extends Application {
 		}
     }
     
-    private void settingScreen() {
-    	Text bejeweledScore = new Text();
-    	bejeweledScore.setText("Bejeweled\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getBejeweledHighScore()));
-    	
-    	Text tfeScore = new Text();
-    	tfeScore.setText("2048\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getTfeHighScore()));
-    	
-    	
-    	Button clearTfe = new Button("Clear 2048");
-    	Button clearBejeweled = new Button("Clear Bejeweled");
-    	Button clearAll = new Button("Clear all high scores");
-    	Button close = new Button("Go Back");
-    	
-    	close.setOnAction(e -> {
-    		clearScreen();
-    		showMenu();
-    	});
-    	clearTfe.setOnAction(e -> {
-    		currentPlayer.clearTfeHighScore();
-    		clearScreen();
-    		settingScreen();
-    	});
-    	clearBejeweled.setOnAction(e -> {
-    		currentPlayer.clearBejeweledHighScore();
-    		clearScreen();
-    		settingScreen();
-    	});
-    	clearAll.setOnAction(e -> {
-    		currentPlayer.clearAllHighScores();
-    		clearScreen();
-    		settingScreen();
-    	});
-    	window.add(tfeScore, 0, 1);
-    	window.add(bejeweledScore, 1, 1);
-    	window.add(clearTfe, 0, 2);
-    	window.add(clearBejeweled, 1, 2);
-    	window.add(clearAll, 0, 3);
-    	window.add(close, 0, 4);
+    private void setPlayerTwo(String name) {
+		if(players.containsKey(name)) { // check if player exists
+			player2 = players.get(name);
+		}
+		else { // add new player to map
+    		player2 = new PlayerData(name);
+    		players.put(name, player2);
+		}
     }
     
-    private void showHighScores() {    	
-    	Text bejeweledScore = new Text();
-    	bejeweledScore.setText("Bejeweled\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getBejeweledHighScore()));
+    
+    private void getGameMode(GameType type) {
+    	clearScreen();
+    	Button singleplayer = new Button("Singleplayer");
+    	Button multiplayer = new Button("Multiplayer");
     	
-    	Text tfeScore = new Text();
-    	tfeScore.setText("2048\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getTfeHighScore()));
     	
-    	Button close = new Button("Go Back");
-    	
-    	close.setOnAction(e -> {
+    	singleplayer.setOnAction(e -> {
     		clearScreen();
-    		showMenu();
+    		startGame(type);
     	});
     	
-    	window.add(tfeScore, 0, 1);
-    	window.add(bejeweledScore, 1, 1);
-    	window.add(close, 0, 3);
+    	multiplayer.setOnAction(e -> {
+    		multiplayerGame = type;
+    		showPlayersScreen();
+    	});
+    	
+    	window.add(singleplayer, 0, 0);
+    	window.add(multiplayer, 1, 0);
+    }
+    
+    
+    private void startGame(GameType type) {
+     	clearScreen();
+
+     	Function<Integer, Integer> endGame = (e) -> {
+            onEndGame();
+            return e;
+        };
+        
+        System.out.println("\nstartGame");
+        System.out.println("\nmultiplayer " + multiplayerGame != null);
+        System.out.println("\nisSecondGame " + isSecondGame);
+        
+        PlayerData player;
+        
+        if (multiplayerGame != null && isSecondGame == true) {
+        	player = player2;
+        	
+        	Label label = new Label(player.getName() + "'s turn!");
+    		label.setFont(Font.font(20));
+    		window.add(label, 0, 3);
+    		
+        } else if (multiplayerGame != null && isSecondGame == false) {
+        	player = currentPlayer;
+        	
+        	Label label = new Label(player.getName() + " is going first!");
+    		label.setFont(Font.font(20));
+    		window.add(label, 0, 3);
+        } else {
+        	player = currentPlayer; // single player
+        }
+        
+     	switch(type) {
+     		case TFE:
+     			System.out.println("run tge");
+     			TFE tfe = new TFE(player, endGame);
+     			GridPane tfe_board = tfe.createGame();
+     			
+     			window.add(tfe_board, 0, 2);
+     			break;
+
+     		case BEJEWELED:
+     			System.out.println("run bejeweled");
+
+     			Bejeweled bejeweled = new Bejeweled(player, endGame);
+     	    	GridPane bejeweled_board = bejeweled.createGame();
+
+     	    	window.add(bejeweled_board, 0, 2);
+     			break;
+     	}
+     }
+    
+    public void onEndGame() {
+    	if(multiplayerGame != null && isSecondGame == false) { // first player finished, continue to second player turn
+    		isSecondGame = true;
+    		startGame(multiplayerGame);
+    	}
+    	else if(multiplayerGame != null && isSecondGame == true) { // both players finished, continue to winner's screen
+    		winnerScreen();
+    	}
+    	else { // is single player, go back to main menu
+        	clearScreen();
+        	showMenu();
+    	}
     }
     
     private void showAllHighScores() {    	
@@ -192,207 +264,59 @@ public class GameManager  extends Application {
     	Text tfeScore = new Text();
     	tfeScore.setText(tfeText);
     	
-    	Button close = new Button("Go Back");
-    	
-    	close.setOnAction(e -> {
-    		clearScreen();
-    		showLoginScreen();
-    	});
-    	
     	window.add(tfeScore, 0, 1);
     	window.add(bejeweledScore, 1, 1);
-    	window.add(close, 0, 3);
+    	window.add(home, 0, 3);
     }
     
-    private void showMenu() {
-    	Text welcome = new Text(String.format("Welcome, %s!", currentPlayer.getName()));
-    	welcome.setFont(Font.font(20));
-    	window.add(welcome, 0, 0);
-    	window.add(playBejeweled, 0, 1);
-    	window.add(playTFE, 1, 1);
-    	window.add(viewHighScores, 0, 2);
-    	window.add(logout, 0, 3);
-    	window.add(settings, 1, 2);
-    }
-    
-    public void onEndGame() {
-    	if(isMultiplayer && player2 == null) { // first player finished, continue to second player turn
-    		secondPlayerTurn();
-    	}
-    	else if(isMultiplayer && player2 != null) { // both players finished, continue to winner's screen
-    		winnerScreen();
-    	}
-    	else { // is single player, go back to main menu
-        	clearScreen();
-        	showMenu();
-    	}
-    }
-    
-    private void clearScreen() {
-    	window.getChildren().clear();
-    }
-    
-    private void secondPlayerTurn() { // run second game instance for second player
-    	clearScreen();
+    private void showCurrentPlayerScores() {
     	
-    	Function<Integer, Integer> endGame = (e) -> {
-            onEndGame();
-            return e;
-        };
+    	Text playerName = new Text("Scores for " + currentPlayer.getName());
+    	playerName.setFont(Font.font(18));
     	
-        Label p2NameLabel = new Label("Enter Player 2's Name:");
-    	Button goHome = new Button("Go Home");
+    	Text bejeweledScore = new Text();
+    	bejeweledScore.setText("Bejeweled\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getBejeweledHighScore()));
     	
-		Button start = new Button("Start!");
-		TextField input = new TextField();
-    	input.setPromptText("Enter Second Player Name"); // get new player name
+    	Text tfeScore = new Text();
+    	tfeScore.setText("2048\n--------------------\nHigh Score: " + String.valueOf(currentPlayer.retrieveData().getTfeHighScore()));
     	
-    	goHome.setOnAction(e -> {
+    	
+    	Button clearTfe = new Button("Clear 2048");
+    	Button clearBejeweled = new Button("Clear Bejeweled");
+    	Button clearAll = new Button("Clear all high scores");
+
+    	clearTfe.setOnAction(e -> {
+    		currentPlayer.clearTfeHighScore();
     		clearScreen();
-    		showMenu();
+    		showCurrentPlayerScores();
+    	});
+    	clearBejeweled.setOnAction(e -> {
+    		currentPlayer.clearBejeweledHighScore();
+    		clearScreen();
+    		showCurrentPlayerScores();
+    	});
+    	clearAll.setOnAction(e -> {
+    		currentPlayer.clearAllHighScores();
+    		clearScreen();
+    		showCurrentPlayerScores();
     	});
     	
-    	if(currentGame == 0) {
-    		start.setOnAction(e -> {
-        		String name = input.getText(); // set second player
-    			player2 = new PlayerData(name);
-        		
-        		if(!players.containsKey(name)){ // check if player exists
-            		players.put(name, player2);
-        		}
-    			
-    			Label label = new Label("It's now " + player2.getName() + "'s turn!");
-    			label.setFont(Font.font(20));
-    			
-    			clearScreen();
-        		System.out.println("run tge");
-    			TFE tfe = new TFE(player2, endGame); // begin second player turn
-    			GridPane tfe_board = tfe.createGame();
-    			window.add(tfe_board, 0, 2);
-    			window.add(label, 0, 3);
-        	});
-    	}
-    	else if(currentGame == 1) {
-    		start.setOnAction(e -> {
-        		String name = input.getText(); // set second player
-    			player2 = new PlayerData(name);
-        		
-        		if(!players.containsKey(name)){ // check if player exists
-            		players.put(name, player2);
-        		}
-    			
-    			Label label = new Label("It's now " + player2.getName() + "'s turn!");
-    			label.setFont(Font.font(20));
-    			
-    			clearScreen(); // begin second player turn
-        		System.out.println("run tge");
-        		Bejeweled bejeweled = new Bejeweled(player2, endGame);
-    	    	GridPane bejeweled_board = bejeweled.createGame();
-    	    	window.add(bejeweled_board, 0, 2);
-    			window.add(label, 0, 3);
-        	});
-    	}
-    	window.add(p2NameLabel, 0, 0);
-    	window.add(input, 0, 1);
-    	window.add(start, 1, 1);
-    	window.add(goHome, 0, 2);
-    }
-    
-    private void startGame(GameType type) {
-    	clearScreen();
-    	
-    	Function<Integer, Integer> endGame = (e) -> {
-            onEndGame();
-            return e;
-        };
-    
-        Button singleplayer = new Button("Singleplayer");
-    	Button multiplayer = new Button("Multiplayer");
-    	Button back = new Button("Go Back");
-    	
-    	switch(type) {
-    		case TFE:
-    	    	singleplayer.setOnAction(e -> {
-    	    		clearScreen();
-    	    		System.out.println("run tge");
-    				TFE tfe = new TFE(currentPlayer, endGame);
-    				GridPane tfe_board = tfe.createGame();
-    				window.add(tfe_board, 0, 2);
-    	    	});
-    			
-    	    	multiplayer.setOnAction(e -> {
-    	    		clearScreen();
-    	    		isMultiplayer = true; // set multiplayer setting to true
-    	    		currentGame = 0; // set current game to tfe (0 for tfe, 1 for bejeweled)
-    	    		
-    	    		Label label = new Label(currentPlayer.getName() + " is going first!");
-    	    		label.setFont(Font.font(20));
-    	    		window.add(label, 0, 3);
-    	    		
-    	    		System.out.println("run tge multiplayer");
-    	    		TFE tfe = new TFE(currentPlayer, endGame);
-    				GridPane tfe_board = tfe.createGame();
-    				window.add(tfe_board, 0, 2);
-    	    	});
-    	    	
-    	    	window.add(singleplayer, 0, 0);
-    	    	window.add(multiplayer, 1, 0);
-    	    	
-    			break;
-    			
-    		case BEJEWELED:
-    	    	singleplayer.setOnAction(e -> {
-    	    		clearScreen();
-    	    		System.out.println("run bewjeweled");
-    	    		Bejeweled bejeweled = new Bejeweled(currentPlayer, endGame);
-    		    	GridPane bejeweled_board = bejeweled.createGame();
-    		    	window.add(bejeweled_board, 0, 2);
-    	    	});
-    			
-    	    	multiplayer.setOnAction(e -> {
-    	    		clearScreen();
-    	    		isMultiplayer = true; // set multiplayer to true
-    	    		currentGame = 1; // set current game to tfe (0 for tfe, 1 for bejeweled)
-    	    		
-    	    		Label label = new Label(currentPlayer.getName() + " is going first!");
-    	    		label.setFont(Font.font(20));
-    	    		window.add(label, 0, 3);
-    	    		
-    	    		System.out.println("run tge multiplayer");
-    	    		Bejeweled bejeweled = new Bejeweled(currentPlayer, endGame);
-    		    	GridPane bejeweled_board = bejeweled.createGame();
-    		    	window.add(bejeweled_board, 0, 2);
-    	    	});
-    	    	
-    	    	window.add(singleplayer, 0, 0);
-    	    	window.add(multiplayer, 1, 0);
-    			break;
-    	}
-    	back.setOnAction(e -> {
-    		clearScreen();
-    		showMenu();
-    	});
-    	
-    	window.add(back, 0, 1);
+    	window.add(playerName, 0, 0);
+    	window.add(tfeScore, 0, 1);
+    	window.add(bejeweledScore, 1, 1);
+    	window.add(clearTfe, 0, 2);
+    	window.add(clearBejeweled, 1, 2);
+    	window.add(clearAll, 0, 3);
+    	window.add(home, 0, 4);
     }
     
     private void winnerScreen() { // prints the winner between two players in multiplayer mode
     	clearScreen();
     	
-    	Button close = new Button("Go Back to Main Menu");
-    	
-    	close.setOnAction(e -> {
-    		player2 = null; // removes second player
-    		isMultiplayer = false; // returns to single player mode
-    		currentGame = -1; // returns to -1 because multiplayer mode is not in session
-    		clearScreen();
-    		showMenu();
-    	}); 
-    	
     	Label winner = new Label();
     	winner.setFont(Font.font(20));
     	
-    	if(currentGame == 0) { // multiplayer game is tfe
+    	if (multiplayerGame == GameType.TFE) { // multiplayer game is tfe
 	    	if(currentPlayer.getHighScore() > player2.getHighScore()) {
 				winner.setText(currentPlayer.getName() + " won with a score of " + currentPlayer.getHighScore() + " /2048 over " +  player2.getName() + "'s score of " + player2.getHighScore() + "/2048!");
 			}
@@ -415,40 +339,52 @@ public class GameManager  extends Application {
     		}
     	}
     	
+    	player2 = null;
+    	isSecondGame = false; 
+    	multiplayerGame = null;
+    	
     	window.add(winner, 0, 1);
-    	window.add(close, 0, 2);
+    	window.add(home, 0, 2);
+    }
+    
+    private void clearScreen() {
+    	window.getChildren().clear();
     }
     
     private void initializeButtons() {
     	
     	playTFE.setOnAction(e -> {
-    		startGame(GameType.TFE);
+    		getGameMode(GameType.TFE);
     	});
     	
     	playBejeweled.setOnAction(e -> {
-    		startGame(GameType.BEJEWELED);
+    		getGameMode(GameType.BEJEWELED);
     	});
     	
-    	viewHighScores.setOnAction(e -> {
+    	allHighScores.setOnAction(e -> {
     		clearScreen();
-    		showHighScores();
+    		showAllHighScores();
     	});
     	
     	logout.setOnAction(e -> {
     		currentPlayer = null;
     		clearScreen();
-    		showLoginScreen();
+    		showPlayersScreen();
     	});
     	
-    	settings.setOnAction(e -> {
+    	myScores.setOnAction(e -> {
     		clearScreen();
-    		settingScreen();
+    		showCurrentPlayerScores();
+    	});
+    	
+    	home.setOnAction(e -> {
+    		clearScreen();
+    		showMenu();
     	});
     	
     }
     
     public static void main(String[] args) {
-//    	System.out.println("GameManager");
         launch(args);
     }
 
