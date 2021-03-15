@@ -4,7 +4,11 @@
 
 **Instructions on executing the jar file**
 
-WE NEED THIS! JAR
+In the main folder of this repository, run the following: 
+
+java --module-path path-t-javafx-sdk/javafx-sdk-11.0.2/lib --add-modules javafx.controls,javafx.fxml -jar Bettersteam.jar
+
+Project can also be ran in an IDE from launder.GameManager.
 
 ## Description
 - 1. Design and implement an extensible Tile-Matching Game Environment (TMGE).  We will adhere to the definition of a tile-matching game.
@@ -25,7 +29,7 @@ WE NEED THIS! JAR
 **Deliverables**
 
 - 1. The TMGE itself
-- 2. Two or more games from the list above that are "built on top of" the TMGE. 
+- 2. Bejeweled and 2048 are "built on top of" the TMGE. 
 - 3. Documentation
 - 4. Instructions for running the game
 - 5. Code and runnable jar (via a CM repository like GitHub)
