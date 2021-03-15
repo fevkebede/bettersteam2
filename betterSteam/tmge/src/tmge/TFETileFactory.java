@@ -13,8 +13,19 @@ public class TFETileFactory extends TileFactory {
 		return new TFETile(row, col, TFE_TILE_SIZE);
 	}
 	
-	public int getRandomValue(int low, int high) {
-        return rand.nextInt(high-low) + low;
+	public int getRandomValue(int range) {
+        return rand.nextInt(range);
     }
+	
+//	10% change of getting a 4
+	public int getFillValue() {
+		int probability = getRandomValue(100);
+		
+		if (probability < 10) {
+			return 4;
+		} else {
+			return 2;
+		}
+	}
 
 }

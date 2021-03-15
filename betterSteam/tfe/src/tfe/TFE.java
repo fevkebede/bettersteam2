@@ -87,8 +87,8 @@ public class TFE extends Game {
     	return tfeTileFactory.createTile(row, col);
     }
     
+    
     private void handleMove(Move dir) {
-    	
         if (GAME_ACTIVE) {
         	moveBlocks(dir);
             fillTwo();
@@ -113,10 +113,14 @@ public class TFE extends Game {
           boardFilled = true;
       }
 
-      int index = tfeTileFactory.getRandomValue(0, emptyCells.size() - 1);
+      int index = tfeTileFactory.getRandomValue(emptyCells.size());
       Cell tempCell = emptyCells.get(index);
       
-      setTileValue(tempCell.getRow(), tempCell.getCol(), 2);
+      Tile to_fill = grid.getTile(tempCell.getRow(), tempCell.getCol());
+      int fill_val = tfeTileFactory.getFillValue();
+      
+//      System.out.println("fill_val " + fill_val);
+      to_fill.setValue(fill_val);
   }  
     
     private boolean validMove(Move dir) {
@@ -182,9 +186,9 @@ public class TFE extends Game {
                         int k = 0;
                         int[] tempArr = {0, 0 ,0, 0};
                         while(k < i){
-                            Cell A = new Cell(i, j);
-                            Cell B = new Cell(k, j);
-                            if(getTileValue(k, j) == 0){
+                        	Tile A = grid.getTile(i, j);
+                        	Tile B = grid.getTile(k, j);
+                        	if(B.getValue() == 0){
                                 moveBlock(A, B);
                             }
                             else{
@@ -204,14 +208,13 @@ public class TFE extends Game {
                     for(int i = ROWS - 2; i >= 0; i--){
                         int k = ROWS - 1;
                         int[] tempArr = {0, 0 ,0, 0};
-                        while(k > i){
-                            Cell A = new Cell(i, j);
-                            Cell B = new Cell(k, j);
-                            if(getTileValue(k, j) == 0){
+                        while(k > i) {
+                            Tile A = grid.getTile(i, j);
+                            Tile B = grid.getTile(k, j);
+                            if (getTileValue(k, j) == 0) {
                                 moveBlock(A, B);
-                            }
-                            else{
-                                if(canCombine(A, B) && tempArr[j] != 1){
+                            } else {
+                                if (canCombine(A, B) && tempArr[j] != 1){
                                     combine(A, B);
                                     tempArr[j] = 1;
                                 }
@@ -228,8 +231,8 @@ public class TFE extends Game {
                     for(int j = 1; j < COLUMNS; j++){
                         int k = 0;
                         while(k < j){
-                            Cell A = new Cell(i, j);
-                            Cell B = new Cell(i, k);
+                            Tile A = grid.getTile(i, j);
+                            Tile B = grid.getTile(i, k);
                             if(getTileValue(i, k) == 0){
                                 moveBlock(A, B);
                             }
@@ -251,8 +254,8 @@ public class TFE extends Game {
                     for(int j = COLUMNS - 2; j >= 0; j--){
                         int k = COLUMNS - 1;
                         while(k > j){
-                            Cell A = new Cell(i, j);
-                            Cell B = new Cell(i, k);
+                            Tile A = grid.getTile(i, j);
+                            Tile B =grid.getTile(i, k);
                             if(getTileValue(i, k) == 0){
                                 moveBlock(A, B);
                             }
@@ -271,53 +274,37 @@ public class TFE extends Game {
         }
     }
 
-    private boolean canCombine(Cell A, Cell B) {
-        // Checking if values in both cells are the same
-        int valueA = getTileValue(A.getRow(), A.getCol());
-        int valueB = getTileValue(B.getRow(), B.getCol());
-        if(valueA == valueB){
-            return true;
-        }
-        return false;
+    private boolean canCombine(Tile A, Tile B) {
+    	return A.getValue() == B.getValue();
     }
 
     // A to B
-    private void combine(Cell A, Cell B) {
-        int doubleValue = getTileValue(B.getRow(), B.getCol()) * 2;
-        setTileValue(B.getRow(), B.getCol(), doubleValue);
-        setTileValue(A.getRow(), A.getCol(), 0);
+    private void combine(Tile A, Tile B) {
+        int doubleValue = B.getValue() * 2;
+        B.setValue(doubleValue);
+        A.setValue(0);
 
         System.out.println("double " + doubleValue + " highestScore " + highestScore.getValue());
         if (doubleValue > highestScore.getValue()){ highestScore.setValue(doubleValue); }
         score.setValue(score.getValue() + doubleValue);
     }
 
-    private void moveBlock(Cell A, Cell B){
-        int tempVal = getTileValue(A.getRow(), A.getCol());
-        setTileValue(B.getRow(), B.getCol(), tempVal);
-        grid.getTile(A.getRow(), A.getCol()).setValue(0);;
+    private void moveBlock(Tile A, Tile B) {
+        B.setValue(A.getValue());
+        A.setValue(0);
     }
+    
+    
 
     @Override
     protected void checkGameover() {
         GAME_ACTIVE = !boardFilled && highestScore.getValue() < GOAL;
     }
     
-//    private void onGameOver() {
-//    	this.player.setHighScore(0, highestScore.getValue());
-//    }
-    
     private int getTileValue(int row, int col) {
     	return grid.getTile(row, col).getValue();
 	}
-    
-    private void setTileValue(int row, int col, int value) {
-        updateTileValue(grid.getTile(row, col), value);
-    }
-    
-    private void updateTileValue(Tile tile, int value) {
-    	tile.setValue(value);
-    }
+   
     
     @Override
     protected void quit() { 
