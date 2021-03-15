@@ -115,7 +115,7 @@ public class Bejeweled extends Game {
         removeAllMatches(true);
         checkGameover();
         
-        if (GAME_ACTIVE) {
+        if (!GAME_ACTIVE) {
         	quit();
         }
     }
@@ -384,106 +384,7 @@ public class Bejeweled extends Game {
 			}
     	}
     	
-    	return false;
-//    	//top row
-//    	if(row == 0) {
-//    		
-//    		//top left coord
-//    		if(col == 0) { 
-//    			
-//    			//swap down check if board has matches
-//    			if(checkDownSwap(row, col)) {
-//    				return true; 
-//    			}
-//    			
-//    			//swap right check if board has matches 
-//    			if(checkRightSwap(row, col)) {
-//    				return true; 
-//    			}
-//  
-//    			
-//    		//top right coord	
-//    		}else if(col == COLUMNS-1){
-//    			//swap down left
-//    			if(checkDownSwap(row, col)) {
-//    				return true; 
-//    			}
-//    			
-//    			if(checkLeftSwap(row, col)) {
-//    				return true; 
-//    			}
-//    			
-//    		
-//    		//top middle coords
-//    		}else {
-//    			//swap down left right
-//    			if(checkDownSwap(row, col)) {
-//    				return true; 
-//    			}
-//    			
-//    			if(checkLeftSwap(row, col)) {
-//    				return true; 
-//    			}
-//    			if(checkRightSwap(row, col)) {
-//    				return true; 
-//    			}
-//    		}
-//    	}
-//    	
-//    	//bottom row 
-//    	else if(row == ROWS-1) {
-//    		
-//    		//bottom left coord
-//    		if(col == 0) { 
-//    			//swap up right
-//      			if(checkUpSwap(row, col)) {
-//       				return true;
-//       			}
-//    			
-//    			if(checkRightSwap(row, col)) {
-//    				return true; 
-//    			}
-//    			
-//    		//bottom right coord	
-//    		}else if(col == COLUMNS-1){
-//    			//swap up left
-//    			if(checkUpSwap(row, col)) {
-//       				return true;
-//       			}
-//    			if(checkLeftSwap(row, col)) {
-//    				return true; 
-//    			}
-//    		
-//    		//bottom middle coords
-//    		}else {
-//    			//swap up left right 
-//    			if(checkUpSwap(row, col)) {
-//       				return true;
-//       			}
-//    			if(checkLeftSwap(row, col)) {
-//    				return true; 
-//    			}
-//    			if(checkRightSwap(row, col)) {
-//    				return true; 
-//    			}
-//    		}
-//    	//every other coord 
-//    	}else { 
-//    		//swap up down left right
-//   			if(checkDownSwap(row, col)) {
-//				return true; 
-//			}
-//   			if(checkUpSwap(row, col)) {
-//   				return true;
-//   			}
-//			if(checkLeftSwap(row, col)) {
-//				return true; 
-//			}
-//			if(checkRightSwap(row, col)) {
-//				return true; 
-//			}
-//    	}
-//    	return false; 
+    	return false;  
 		 
     }
     
@@ -684,10 +585,6 @@ public class Bejeweled extends Game {
                 if (FLAG) { save(); }
                 updateList.clear();
             }
-            
-            if(findPossibleMatches()) {
-            	CHECKING = false;
-            }
         }
     }
     
@@ -736,7 +633,7 @@ public class Bejeweled extends Game {
 //        return score.getValue();
         player.setHighScore(1, score.getValue());
         System.out.println(player.getHighScore());
-        player.setInGame(false);
+        //player.setInGame(false);
         onGameEnd.apply(1);
     }
     
@@ -746,7 +643,7 @@ public class Bejeweled extends Game {
 	    //no possible matches 
 	  	if(findPossibleMatches()) {
 	  		System.out.println("Possible moves found");
-	  		GAME_ACTIVE = (movesLeft.getValue() <= 0);
+	  		GAME_ACTIVE = (movesLeft.getValue() >= 0);
 	  	}else {
 	  		System.out.println("No possible moves found");
 	  		GAME_ACTIVE = false; 
