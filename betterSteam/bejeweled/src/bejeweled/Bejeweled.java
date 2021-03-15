@@ -160,6 +160,73 @@ public class Bejeweled extends Game {
         }
     }
     
+    private boolean matchExistsInBoard() {
+      for (int i = 0; i < ROWS; i++) {
+    	  if(matchExists(i, false)) {
+    		  return true;
+    	  }
+    	  
+      }
+      for (int i = 0; i < COLUMNS; i++) {
+    	  if(matchExists(i, true)) {
+    		  return true;
+    	  }
+      }
+      
+      return false;
+    }
+  
+    private boolean checkRightSwap(int row, int col) {
+		swap(row,col, RIGHT);
+		if(matchExistsInBoard()) {
+			//unswap
+			swap(row,col+1,LEFT);
+			return true;
+		}else {
+			//unswap
+			swap(row, col+1, LEFT);
+		}
+		return false;
+    }
+    private boolean checkLeftSwap(int row, int col) {
+		swap(row,col, LEFT);
+		if(matchExistsInBoard()) {
+			//unswap
+			swap(row,col-1, RIGHT);
+			return true;
+		}else {
+			//unswap
+			swap(row, col-1, RIGHT);
+		}
+    	return false;
+    }
+    
+    private boolean checkDownSwap(int row, int col) {
+		swap(row,col, DOWN);
+		if(matchExistsInBoard()) {
+			//unswap
+			swap(row+1,col,UP);
+			return true;
+		}else {
+			//unswap
+			swap(row+1, col, UP);
+		}
+		return false;
+    }
+    
+    private boolean checkUpSwap(int row, int col) {
+		swap(row,col, UP);
+		if(matchExistsInBoard()) {
+			//unswap
+			swap(row-1,col,DOWN);
+			return true;
+		}else {
+			//unswap
+			swap(row-1, col, DOWN);
+		}
+    	return false;
+    }
+    
     
     private boolean executePossibleMoves(Cell position) {
     	//	Cell position is a jewel that must be swapped in every direction possible
@@ -167,49 +234,257 @@ public class Bejeweled extends Game {
     	int row = position.getRow();
     	int col = position.getCol();
     	
+    	System.out.print(row);
+    	System.out.print(", ");
+    	System.out.println(col);
     	
     	//top row
     	if(row == 0) {
-    		
     		//top left coord
-    		if(col == 0) { 
-    			//swap down right 
+    		if(col == 0) { 			
+    			//swap down check if board has matches
+    			if(checkDownSwap(row, col)) {
+    				return true; 
+    			}
     			
-    		//top right coord	
-    		}else if(col == COLUMNS-1){
-    			//swap down left
-    		
-    		//top middle coords
+    			//swap right check if board has matches 
+    			if(checkRightSwap(row, col)) {
+    				return true; 
+    			}
+    		}
+    		else if(col == ROWS-1) {	
+    			if(checkDownSwap(row, col)) {
+    				return true; 
+    			}
+    			if(checkLeftSwap(row, col)) {
+    				return true; 
+    			}
+    		//top inner row 
     		}else {
-    			//swap down left right
+    			//swap up left and right 
+    			if(checkDownSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    			if(checkRightSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    			if(checkLeftSwap(row, col)) {
+    				return true; 
+    			}
     			
     		}
-    	}
-    	
-    	//bottom row 
-    	else if(row == ROWS-1) {
-    		
-    		//bottom left coord
-    		if(col == 0) { 
-    			//swap up right
-    			
-    		//bottom right coord	
-    		}else if(col == COLUMNS-1){
-    			//swap up left
-    		
-    		//bottom middle coords
-    		}else {
-    			//swap up left right 
-    			
-    		}
-    	//every other coord 
-    	}else { 
-    		//swap up down left right
-    		swap(row, col, UP);
 
     	}
     	
-    	return false; 
+    	//bottom row
+    	else if(row == ROWS-1) {
+  	
+    		//bottom left coord
+    		if(col == 0) {
+    			if(checkRightSwap(row, col)) {
+    				return true; 
+    			}
+    			if(checkUpSwap(row, col)) {
+    				return true; 
+    			}
+    		
+    		//bottom right coord 
+    		}else if(col == COLUMNS-1) {
+    			if(checkLeftSwap(row, col)) {
+    				return true; 
+    			}
+    			if(checkUpSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    		//bottom inner row 
+    		}else {
+    			if(checkUpSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    			if(checkRightSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    			if(checkLeftSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    		}
+    	}
+    	
+    	//left most column
+    	else if(col == 0) {
+    		//left most column inner 
+			if(checkUpSwap(row, col)) {
+				return true; 
+			}
+			
+			if(checkRightSwap(row, col)) {
+				return true; 
+			}
+			
+			if(checkDownSwap(row, col)) {
+				return true; 
+			}
+    	}
+    	
+    	//right most column
+    	else if(col == COLUMNS-1) {
+    		//top right coord 
+    		if(row == 0) {
+    			if(checkLeftSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    			if(checkDownSwap(row, col)) {
+    				return true; 
+    			}
+    		}
+    		
+    		//bottom right coord
+    		else if(row == ROWS-1) {
+    			if(checkLeftSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    			if(checkUpSwap(row, col)) {
+    				return true; 
+    			}
+    		
+    		//right most column inner 
+    		}else {
+    			if(checkLeftSwap(row, col)) {
+    				return true; 
+    			}
+    			
+    			if(checkUpSwap(row, col)) {
+    				return true; 
+    			}
+     			if(checkDownSwap(row, col)) {
+    				return true; 
+    			}
+    		}		
+    	}else {
+    		//non edge coords
+			if(checkDownSwap(row, col)) {
+				return true; 
+			}
+				if(checkUpSwap(row, col)) {
+					return true;
+				}
+			if(checkLeftSwap(row, col)) {
+				return true; 
+			}
+			if(checkRightSwap(row, col)) {
+				return true; 
+			}
+    	}
+    	
+    	return false;
+//    	//top row
+//    	if(row == 0) {
+//    		
+//    		//top left coord
+//    		if(col == 0) { 
+//    			
+//    			//swap down check if board has matches
+//    			if(checkDownSwap(row, col)) {
+//    				return true; 
+//    			}
+//    			
+//    			//swap right check if board has matches 
+//    			if(checkRightSwap(row, col)) {
+//    				return true; 
+//    			}
+//  
+//    			
+//    		//top right coord	
+//    		}else if(col == COLUMNS-1){
+//    			//swap down left
+//    			if(checkDownSwap(row, col)) {
+//    				return true; 
+//    			}
+//    			
+//    			if(checkLeftSwap(row, col)) {
+//    				return true; 
+//    			}
+//    			
+//    		
+//    		//top middle coords
+//    		}else {
+//    			//swap down left right
+//    			if(checkDownSwap(row, col)) {
+//    				return true; 
+//    			}
+//    			
+//    			if(checkLeftSwap(row, col)) {
+//    				return true; 
+//    			}
+//    			if(checkRightSwap(row, col)) {
+//    				return true; 
+//    			}
+//    		}
+//    	}
+//    	
+//    	//bottom row 
+//    	else if(row == ROWS-1) {
+//    		
+//    		//bottom left coord
+//    		if(col == 0) { 
+//    			//swap up right
+//      			if(checkUpSwap(row, col)) {
+//       				return true;
+//       			}
+//    			
+//    			if(checkRightSwap(row, col)) {
+//    				return true; 
+//    			}
+//    			
+//    		//bottom right coord	
+//    		}else if(col == COLUMNS-1){
+//    			//swap up left
+//    			if(checkUpSwap(row, col)) {
+//       				return true;
+//       			}
+//    			if(checkLeftSwap(row, col)) {
+//    				return true; 
+//    			}
+//    		
+//    		//bottom middle coords
+//    		}else {
+//    			//swap up left right 
+//    			if(checkUpSwap(row, col)) {
+//       				return true;
+//       			}
+//    			if(checkLeftSwap(row, col)) {
+//    				return true; 
+//    			}
+//    			if(checkRightSwap(row, col)) {
+//    				return true; 
+//    			}
+//    		}
+//    	//every other coord 
+//    	}else { 
+//    		//swap up down left right
+//   			if(checkDownSwap(row, col)) {
+//				return true; 
+//			}
+//   			if(checkUpSwap(row, col)) {
+//   				return true;
+//   			}
+//			if(checkLeftSwap(row, col)) {
+//				return true; 
+//			}
+//			if(checkRightSwap(row, col)) {
+//				return true; 
+//			}
+//    	}
+//    	return false; 
+		 
     }
     
     private void swap(int row, int col, int dir) {
@@ -235,7 +510,6 @@ public class Bejeweled extends Game {
                 firstTile.setValue(secondTile.getValue());
                 secondTile.setValue(firstTileValue);
                 break;
-                break;
             }
             case LEFT: {
                 // SWAP LEFT
@@ -260,14 +534,20 @@ public class Bejeweled extends Game {
         }
     
     }
+    
     private boolean findPossibleMatches() {
+    	
+    	boolean possibleMoveFound = false; 
     	//iterate through each cell 
         for (int i = 0; i < ROWS; i++) {
         	for(int j = 0; j < COLUMNS; j++) {
-        		executePossibleMoves(new Cell(i, j));
+        		if(executePossibleMoves(new Cell(i, j))) {
+        			possibleMoveFound = true; 
+        		}
         	}
         }
-        return false;
+        //no matches found
+        return possibleMoveFound;
     }
     
 
@@ -404,6 +684,10 @@ public class Bejeweled extends Game {
                 if (FLAG) { save(); }
                 updateList.clear();
             }
+            
+            if(findPossibleMatches()) {
+            	CHECKING = false;
+            }
         }
     }
     
@@ -459,7 +743,13 @@ public class Bejeweled extends Game {
     
   @Override
   protected void checkGameover() {
-//    	TODO check for possible moves
-	  	GAME_ACTIVE = (movesLeft.getValue() <= 0);
+	    //no possible matches 
+	  	if(findPossibleMatches()) {
+	  		System.out.println("Possible moves found");
+	  		GAME_ACTIVE = (movesLeft.getValue() <= 0);
+	  	}else {
+	  		System.out.println("No possible moves found");
+	  		GAME_ACTIVE = false; 
+	  	}
     }
 }
